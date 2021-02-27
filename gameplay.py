@@ -15,6 +15,7 @@ import time
 max_len = 500
 
 env = h_env.HockeyEnv()
+
 player1 = h_env.BasicOpponent()
 player2 = h_env.BasicOpponent()
 # player2 = h_env.HumanOpponent(env=env, player=2)
