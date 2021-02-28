@@ -20,16 +20,15 @@ class QFunction(Feedforward):
         #self.loss = torch.nn.MSELoss()
         
     def fit(self, observations, actions, targets):
-        # TODO: complete this
-        self.train() # put model in training mode
-        self.optimizer.zero_grad()
-        # Forward pass
         
+        # put model in training mode
+        self.train()
+        #set gradients to zero
+        self.optimizer.zero_grad()
+        
+        # Forward pass
         pred    = self.Q_value(observations, actions)
         targets = torch.from_numpy(targets).float()
-        
-        # Compute Loss
-        #print('pred, targets', pred.shape, targets.shape)
         loss = self.loss(pred, targets)
         
         # Backward pass
@@ -40,37 +39,17 @@ class QFunction(Feedforward):
     
     def Q_value(self, observations, actions):
         # compute the Q value for the give actions
-        # Hint: use the torch.gather function select the right outputs 
-        # Complete this
-        
-        #print('a before',actions)
-        
-        actions  = torch.tensor(actions).reshape((observations.shape[0],1))
-        
-        #print('a after',actions)
-        
+        #print('Actions shape: ', actions.shape, '\n')
+        actions  = torch.tensor(actions).reshape((actions.shape[0],1))
         q_values = self.forward(torch.from_numpy(observations).float())
-        
-        #print('q before', q_values)
-        
-        #q_values = torch.tensor(q_values, requires_grad=True)
-        
-        #print('q after',q_values)
-        
         result =  torch.gather(q_values, 1, actions).flatten()
-        
-        #print('result',result)
         
         return result
     
     def maxQ(self, observations):
-        # compute the maximal Q-value
-        # Complete this
-        #observations = torch.from_numpy(observations).float()
         return np.max(self.predict(observations), axis=-1)
     
     def greedyAction(self, observations):
-        # this computes the greedy action
         return np.argmax(self.predict(observations), axis=-1)
     
     
@@ -103,8 +82,6 @@ class DQNAgent(object):
         self.T = QFunction(self._observation_n , action_space.n)
             
     def _update_target_net(self):        
-        # complete here
-        # Hint: use load_state_dict() and state_dict() functions
         self.T.load_state_dict(self.Q.state_dict())
     
     def act(self, observation, eps=None):
@@ -122,45 +99,42 @@ class DQNAgent(object):
             
     def train(self, iter_fit=32):
         losses = []
-        # complete this! 
-        # Hint: look at last exercise's solution
-        # Hint: while developing print the shape of !all! tensors/arrays to make sure 
-        #  they have the right shape: (batchsize, X)  
         
-        # Hint: for the target network, update its parameters at the beginning of this function 
-        # every k  train calls. 
-        
+        # update the target networks parameters every k train calls
         k=self._config["update_rule"]
         self.train_iter +=1
         if self.train_iter % k == 0:
             self._update_target_net()
         
-        # Hint:
+     
         for i in range(iter_fit):
             
             # sample from the replay buffer
             data   = self.buffer.sample(batch=self._config["batch_size"])
-            s      = np.stack(data[:,0]) # s_t
-            sp     = np.stack(data[:,3]) # s_t+1
-            a      = np.stack(data[:,1]) # a
-            rew    = np.stack(data[:,2])[:,None].flatten() # rew
+            states      = np.stack(data[:,0]) # s_t
+            next_states     = np.stack(data[:,3]) # s_t+1
+            actions      = np.stack(data[:,1]) # a
+            rewards    = np.stack(data[:,2])[:,None].flatten() # rew
             
-            #print(rew)
-            values  = self.Q.maxQ(sp)
-            valuesp = self.T.maxQ(sp)
+            # target network estimates the values of the next states
+            next_state_values = self.T.maxQ(next_states)
             
-            # target
-            target = rew+self._config['discount']*valuesp
+            # TD target is computed based on target network predictions
+            target = rewards + self._config['discount']*next_state_values
 
-            # optimize the lsq objective
-            #print('loss',s.shape, target.shape )
-            #print('target', valuesp.shape, rew.shape)
-            #print(self._config['batch_size'], self._config['discount'])
-            
-            fit_loss = self.Q.fit(s, a, target)
+            # only optimize the parameters of the Q network
+            fit_loss = self.Q.fit(states, actions, target)
             
             losses.append(fit_loss)    
-            #print(fit_loss)
-            #input()
+  
 
         return losses
+    
+    
+    
+    
+    
+    
+    
+    
+    

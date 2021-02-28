@@ -25,9 +25,10 @@ for i in range(max_episodes):
     ob = env.reset()
     for t in range(max_steps):
         done = False        
-        a1 = env.discrete_to_continous_action(q_agent.act(ob))
+        a1 = q_agent.act(ob)
+        a1_cont = env.discrete_to_continous_action(a1)
         a2 = player2.act(ob)
-        (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
+        (ob_new, reward, done, _info) = env.step(np.hstack([a1_cont,a2]))
         total_reward+= reward
         q_agent.store_transition((ob, a1, reward, ob_new, done))            
         ob=ob_new        
