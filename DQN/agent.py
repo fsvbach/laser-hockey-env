@@ -83,6 +83,13 @@ class DQNAgent(object):
             
     def _update_target_net(self):        
         self.T.load_state_dict(self.Q.state_dict())
+        
+    def save_weights(self, filepath):
+        torch.save(self.Q.state_dict(), filepath)
+    
+    def load_weights(self, filepath):
+        self.Q.load_state_dict(torch.load(filepath))
+        self.Q.eval()
     
     def act(self, observation, eps=None):
         if eps is None:

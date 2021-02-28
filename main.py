@@ -14,21 +14,20 @@ player2 = h_env.BasicOpponent()
 stats = []
 losses = []
 
-max_episodes=600
+max_episodes=100
 max_steps=500
 fps=50
 #mode="random"
 show=False
 for i in range(max_episodes):
-    print("Starting a new episode")    
+    # print("Starting a new episode")    
     total_reward = 0
     ob = env.reset()
     for t in range(max_steps):
         done = False        
         a1 = q_agent.act(ob)
-        a1_cont = env.discrete_to_continous_action(a1)
-        a2 = player2.act(ob)
-        (ob_new, reward, done, _info) = env.step(np.hstack([a1_cont,a2]))
+        a2 = player2.act(env.obs_agent_two())
+        (ob_new, reward, done, _info) = env.step(np.hstack([env.discrete_to_continous_action(a1),a2]))
         total_reward+= reward
         q_agent.store_transition((ob, a1, reward, ob_new, done))            
         ob=ob_new        
@@ -36,9 +35,14 @@ for i in range(max_episodes):
             time.sleep(1.0/fps)
             env.render(mode='human')        
         if done: break    
-    print('buffer_size',q_agent.buffer.size)
+    # print('buffer_size',q_agent.buffer.size)
     losses.extend(q_agent.train(32))
     stats.append([i,total_reward,t+1])    
     
     if ((i-1)%20==0):
-        print("{}: Done after {} steps. Reward: {}".format(i, t+1, total_reward))
+        print("Episode {}: Done after {} steps. Reward: {}".format(i, t+1, total_reward))
+        
+
+q_agent.save_weights('DQN/weights/test')
+
+
