@@ -42,3 +42,12 @@ for _ in range(max_len):
 env.close()
 
 plt.plot(reward_buffer[:-1])
+
+
+'''
+TODO: 
+    rename files (main -> train agent)
+    in gameplay: load weights
+    in agent: integrate buffer, always return continuous actions
+
+'''
