@@ -17,14 +17,15 @@ fps = 50
 
 env = h_env.HockeyEnv()
 
-ac_space = Discrete(8)
 o_space = env.observation_space
+ac_space = env.action_space
 
 player2 = h_env.BasicOpponent()
 player1 = h_env.HumanOpponent(env=env, player=1)
-player1 = agent.DQNAgent(o_space, ac_space)
-
-player1.load_weights('DQN/weights/test')
+player1 = agent.DQNAgent(o_space, 
+                         Discrete(8), 
+                         convert_func =  env.discrete_to_continous_action, 
+                         pretrained   = 'DQN/weights/test100')
 
 obs = env.reset()
 
@@ -39,7 +40,7 @@ for _ in range(max_len):
     env.render()
     a1 = player1.act(obs) 
     a2 = player2.act(obs_agent2)
-    obs, r, d, info = env.step(np.hstack([env.discrete_to_continous_action(a1),a2]))    
+    obs, r, d, info = env.step(np.hstack([a1,a2]))    
     obs_agent2 = env.obs_agent_two()
     
     obs_buffer.append(obs_agent2)
@@ -47,16 +48,3 @@ for _ in range(max_len):
     if d: break
 
 env.close()
-
-
-# test if ssh key is working
-
-
-
-'''
-TODO: 
-    rename files (main -> train agent)
-    in gameplay: load weights
-    in agent: integrate buffer, always return continuous actions
-
-'''
