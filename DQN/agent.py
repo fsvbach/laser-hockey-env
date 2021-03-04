@@ -53,11 +53,11 @@ class DQNAgent(object):
     """
     Agent implementing Q-learning with NN function approximation.    
     """
-    def __init__(self, observation_space, action_space, convert_func, pretrained=False, **userconfig):
+    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, **userconfig):
         
         self._observation_space = observation_space
         self._observation_n = len(observation_space.low)
-        self.convert = convert_func
+        self.convert=convert_func
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {

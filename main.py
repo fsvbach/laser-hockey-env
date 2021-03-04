@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar  4 14:33:17 2021
+
+@author: fsvbach
+"""
+
+from DQN import agent, train
+from gym.spaces.discrete import Discrete
+import laserhockey.hockey_env as h_env
+from laserhockey.gameplay import gameplay
+import matplotlib.pyplot as plt
+
+env = h_env.HockeyEnv()
+attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
+defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
+play = h_env.HockeyEnv_BasicOpponent()
+
+
+q_agent = agent.DQNAgent(env.observation_space, 
+                         Discrete(8),
+                         #convert_func =  env.discrete_to_continous_action, #only in gameplay mode!!
+                        pretrained   = 'DQN/weights/shootdefense')
+
+
+player2 = h_env.BasicOpponent()
+player1 = agent.DQNAgent( env.observation_space, 
+                          Discrete(8), 
+                          convert_func =  env.discrete_to_continous_action,
+                          pretrained   = 'DQN/weights/shootdefense')
+
+losses, rewards = train.train(attack, q_agent, player2=False, name='shootdefense')
+plt.plot(losses)
+plt.show()
+plt.plot(rewards)
+plt.show()
+
+stats = gameplay(attack, player1, player2=player2, N=5, show=True)
+print(stats)
+
+env.close()
