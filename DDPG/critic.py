@@ -1,4 +1,4 @@
-from feedforward import Feedforward
+from .feedforward import Feedforward
 import torch
 import numpy as np
 

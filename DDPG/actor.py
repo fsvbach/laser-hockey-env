@@ -1,4 +1,4 @@
-from feedforward import Feedforward
+from .feedforward import Feedforward
 import torch
 import numpy as np
 
@@ -23,4 +23,4 @@ class Actor(Feedforward):
         return loss.item()
 
     def get_action(self, obs):
-        return torch.clamp(self.forward(torch.from_numpy(obs).float()), min=-2.0, max=2.0)
+        return torch.clamp(self.forward(torch.from_numpy(obs).float()), min=-1.0, max=1.0)

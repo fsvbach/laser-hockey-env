@@ -1,14 +1,14 @@
 import torch
 import numpy as np
-import memory
-from actor import Actor
-from critic import Critic
+from .memory import Memory
+from .actor import Actor
+from .critic import Critic
 
 class DDPGAgent(object):
     """
     Agent implementing DDPG.
     """
-    def __init__(self, observation_space, action_space, pretrained=False **userconfig):
+    def __init__(self, observation_space, action_space, pretrained=False, **userconfig):
 
         self._observation_space = observation_space
         self._action_space = action_space
@@ -24,7 +24,7 @@ class DDPGAgent(object):
         }
         self._config.update(userconfig)
 
-        self.buffer = memory.Memory(max_size=self._config["buffer_size"])
+        self.buffer = Memory(max_size=self._config["buffer_size"])
 
         self.actor_update_rate = self._config["actor_update_rate"]
         self.critic_update_rate = self._config["critic_update_rate"]
@@ -49,9 +49,9 @@ class DDPGAgent(object):
 
         if pretrained:
             try:
-                self.actor.load_state_dict(torch.load(pretrained))
+                self.actor.load_state_dict(torch.load(pretrained + "_actor"))
                 self.actor.eval()
-                self.critic.load_state_dict(torch.load(pretrained))
+                self.critic.load_state_dict(torch.load(torch.load(pretrained + "_critic")))
                 self.critic.eval()
             except:
                 print(f'ERROR: Could not load weights from {pretrained}')
@@ -88,10 +88,15 @@ class DDPGAgent(object):
                 target_updated.add_(torch.mul(p2, self.critic_update_rate))
                 p1.copy_(target_updated)
 
+    def save_weights(self, filepath):
+        torch.save(self.actor.state_dict(), filepath +  "_actor")
+        torch.save(self.critic.state_dict(), filepath + "_critic")
 
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
 
+    def act(self, obs):
+        return self.actor.get_action(obs).detach()
 
     def train(self, iter_fit=32):
         losses = []
@@ -105,20 +110,25 @@ class DDPGAgent(object):
             # sample from the replay buffer
             data=self.buffer.sample(batch=self._config['batch_size'])
             # column_stack for alignment on dim 2
-            s = np.column_stack(data[:,0]).reshape(self._config['batch_size'], -1)
-            a = torch.vstack(data[:, 1].tolist()) # [batch_size,1] tensor
-            rew = np.vstack(data[:,2])
-            s_prime = np.stack(data[:,3]).reshape(self._config['batch_size'], -1)
+
+            #s = np.column_stack(data[:,0]).reshape(self._config['batch_size'], -1)
+            #a = torch.vstack(data[:, 1].tolist()) # [batch_size,1] tensor
+            #rew = np.vstack(data[:,2])
+            #s_prime = np.stack(data[:,3]).reshape(self._config['batch_size'], -1)
             done = np.stack(data[:,4])[:,None]
+            s = np.stack(data[:,0]) # s_t
+            s_prime = np.stack(data[:,3]) # s_t+1
+            a = np.stack(data[:,1]) # a
+            rew = np.stack(data[:,2])[:,None].flatten() # rew
 
             gamma=self._config['discount']
             a_prime = self.actor_target.get_action(s_prime)
-            td_target = torch.from_numpy(rew) + gamma * torch.logical_not(torch.from_numpy(done)) * self.critic_target.Q_value(
-                torch.from_numpy(s_prime), a_prime.detach())
 
-            q = self.critic.Q_value(torch.from_numpy(s), a.detach())
+            td_target = torch.from_numpy(rew) + gamma * torch.logical_not(torch.from_numpy(done)) * self.critic_target.Q_value(
+                torch.from_numpy(s_prime), a_prime)
+
+            q = self.critic.Q_value(torch.from_numpy(s), torch.from_numpy(a))
             critic_fit_loss = self.critic.fit(q, td_target)
-            #print(q)
             #TODO: why actions only non-negative?
             #TODO: Initialization of critic: --> 1 problem due to this!
             an = self.actor.get_action(s)

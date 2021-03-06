@@ -24,8 +24,6 @@ class Feedforward(torch.nn.Module):
     def forward(self, x):
         for layer,activation_fun in zip(self.layers, self.activations):
             x = activation_fun(layer(x))
-        if self.actor:
-            x = 2.0 * x
         return x
 
 

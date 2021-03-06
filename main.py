@@ -11,18 +11,20 @@ from gym.spaces.discrete import Discrete
 import laserhockey.hockey_env as h_env
 from laserhockey.gameplay import gameplay
 import matplotlib.pyplot as plt
+from DDPG import train as ddpg_train
+from DDPG.ddpg_agent import DDPGAgent
 
 env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 play = h_env.HockeyEnv_BasicOpponent()
 
-
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
                          #convert_func =  env.discrete_to_continous_action, #only in gameplay mode!!
                         pretrained   = 'DQN/weights/shootdefense')
 
+#ddpg_agent = DDPGAgent(env.observation_space, env.action_space)
 
 player2 = h_env.BasicOpponent()
 player1 = agent.DQNAgent( env.observation_space, 
@@ -30,13 +32,20 @@ player1 = agent.DQNAgent( env.observation_space,
                           convert_func =  env.discrete_to_continous_action,
                           pretrained   = 'DQN/weights/shootdefense')
 
+ddpg_player = DDPGAgent(env.observation_space, 
+                         env.action_space,
+                        pretrained   = 'DDPG/weights/shootdefense'
+                        )                 
+
 losses, rewards = train.train(attack, q_agent, player2=False, name='shootdefense')
+#losses, rewards = ddpg_train.train(attack, ddpg_agent, player2=False, name='shootdefense')
 plt.plot(losses)
 plt.show()
 plt.plot(rewards)
 plt.show()
 
-stats = gameplay(attack, player1, player2=player2, N=5, show=True)
+#stats = gameplay(attack, player1, player2=player2, N=5, show=True)
+stats = gameplay(attack, ddpg_player, player2=player2, N=5, show=True)
 print(stats)
 
 env.close()
