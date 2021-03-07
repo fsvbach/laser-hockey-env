@@ -17,7 +17,6 @@ from DDPG.ddpg_agent import DDPGAgent
 env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
-play = h_env.HockeyEnv_BasicOpponent()
 
 name='attack'
 
@@ -49,4 +48,3 @@ print(stats)
 defense.close()
 attack.close()
 env.close()
-play.close()
