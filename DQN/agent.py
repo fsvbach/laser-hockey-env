@@ -6,13 +6,13 @@ import torch
 """ Q Network, input: observations, output: q-values for all actions """
 class QFunction(Feedforward):
     def __init__(self, observation_dim, action_dim,
-                 hidden_sizes=[100,100], learning_rate = 0.0002):
+                 hidden_sizes=[100,100,100], learning_rate = 0.0002):
         super().__init__(input_size=observation_dim, 
                          hidden_sizes=hidden_sizes, 
                          output_size=action_dim)
         self.optimizer=torch.optim.Adam(self.parameters(), 
                                         lr=learning_rate, 
-                                        eps=0.000001)
+                                        eps=0.00001)
         self.loss = torch.nn.SmoothL1Loss()
         
     def fit(self, observations, actions, targets):
@@ -61,8 +61,8 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.05,            # Epsilon in epsilon greedy policies                        
-            "discount": 0.95,
+            "eps": 0.1,            # Epsilon in epsilon greedy policies                        
+            "discount": 1,
             "buffer_size": int(1e5),
             "batch_size": 128,
             "learning_rate": 0.0002, 
