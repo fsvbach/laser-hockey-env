@@ -638,7 +638,7 @@ class HockeyEnv(gym.Env, EzPickle):
     self.closest_to_goal_dist = min(self.closest_to_goal_dist,
                                     dist_positions(self.puck.position, (W, H / 2)))
     self.time += 1
-    return obs, reward + info["reward_closeness_to_puck"], self.done, info
+    return obs, reward + info["reward_closeness_to_puck"]+ info["reward_touch_puck"]+ info["reward_puck_direction"], self.done, info
 
   def render(self, mode='human'):
     from gym.envs.classic_control import rendering
