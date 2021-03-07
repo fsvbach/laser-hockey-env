@@ -6,7 +6,7 @@ import torch
 """ Q Network, input: observations, output: q-values for all actions """
 class QFunction(Feedforward):
     def __init__(self, observation_dim, action_dim,
-                 hidden_sizes=[100,100,100], learning_rate = 0.0002):
+                 hidden_sizes=[100,100], learning_rate = 0.0002):
         super().__init__(input_size=observation_dim, 
                          hidden_sizes=hidden_sizes, 
                          output_size=action_dim)
@@ -62,10 +62,10 @@ class DQNAgent(object):
         self._action_n = action_space.n
         self._config = {
             "eps": 0.1,            # Epsilon in epsilon greedy policies                        
-            "discount": 1,
+            "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
-            "learning_rate": 0.0002, 
+            "learning_rate": 0.001, 
             "update_rule": 3,
             # add additional parameters here        
         }
@@ -100,11 +100,13 @@ class DQNAgent(object):
         if np.random.random() > eps:
             action = self.Q.greedyAction(observation)
         else: 
-            action = self._action_space.sample()        
+            action = self._action_space.sample()   
+        self.last_action = action
         return self.convert(action)
     
     def store_transition(self, transition):
-        self.buffer.add_transition(transition)
+        (ob, reward, ob_new, done) = transition
+        self.buffer.add_transition((ob, self.last_action, reward, ob_new, done))
             
     def train(self, iter_fit=32):
         losses = []

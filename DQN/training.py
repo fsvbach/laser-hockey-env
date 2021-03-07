@@ -1,6 +1,11 @@
 import time
 import numpy as np
 
+def running_mean(x, N):
+    cumsum = np.cumsum(np.insert(x, 0, 0)) 
+    return (cumsum[N:] - cumsum[:-N]) / float(N)
+
+
 def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=False, name='test'):
     
     stats = []
@@ -17,9 +22,9 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
             a2 = [0,0.,0,0] 
             if player2:
                 a2 = player2.act(obs2)
-            (ob_new, reward, done, _info) = env.step(np.hstack([env.discrete_to_continous_action(a1),a2]))
+            (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
             total_reward+= reward
-            q_agent.store_transition((ob, a1, reward, ob_new, done))            
+            q_agent.store_transition((ob, reward, ob_new, done))            
             ob=ob_new        
             obs2 = env.obs_agent_two()
             if show:
