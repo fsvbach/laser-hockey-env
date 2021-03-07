@@ -42,7 +42,7 @@ plt.show()
 plt.close()
 
 player2 = h_env.BasicOpponent()
-stats = gameplay(attack, q_agent, player2=False, N=5, show=True)
+stats = gameplay(attack, q_agent, player2=False, N=30, show=True)
 print(stats)
 
 defense.close()
