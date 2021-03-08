@@ -13,8 +13,8 @@ class Memory():
         self.max_size=max_size
         self.normalization_constant=self.max_size
 
-    def add_transition(self, val):
-        new_transition = (val[0], val[1], val[2], val[3], val[4], self.max_priority)
+    def add_transition(self, new_transition):
+        new_transition += [self.max_priority]
         if self.size == 0:
             # fill buffer with new transition till its full
             blank_buffer = [np.asarray(new_transition, dtype=object)] * self.max_size
@@ -28,9 +28,9 @@ class Memory():
         old_priorities = np.sum(self.transitions[indices, 5])
         new_priorities = np.sum(td_errors) + td_errors.size * self.eps
         
-        self.normalization_constant = self.normalization_constant - old_priorities + new_priorities
+        self.normalization_constant += new_priorities - old_priorities 
         self.transitions[indices, 5] = td_errors + self.eps
-        self.max_priority = np.max(np.max(td_errors), self.max_priority)
+        self.max_priority = np.max(np.max(td_errors) + self.eps, self.max_priority)
 
     def sample(self, batch=1):
         if batch > self.size:
