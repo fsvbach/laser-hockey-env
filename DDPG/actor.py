@@ -1,26 +1,24 @@
-from .feedforward import Feedforward
+#!/usr/bin/env python3
+'''
+@author maitim
+'''
+
+import torch.nn.functional as F
+import torch.nn as nn
 import torch
 import numpy as np
 
-class Actor(Feedforward):
-
-    def __init__(self, observation_dim, action_dim, hidden_sizes=[200,100],
-                 learning_rate=0.0001):
-        super().__init__(input_size=observation_dim, hidden_sizes=hidden_sizes,
-                         output_size=action_dim, actor=True)
-        self.optimizer=torch.optim.Adam(self.parameters(),
-                                        lr=learning_rate,
-                                        eps=0.000001)
+class Actor(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, learning_rate = 1e-4):
+        super(Actor, self).__init__()
+        self.lin1 = nn.Linear(input_size, hidden_size)
+        self.lin2 = nn.Linear(hidden_size, hidden_size)
+        self.lin3 = nn.Linear(hidden_size, output_size)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
         
-
-    def fit(self, q_policy):
-        #self.train() # put model in training mode
-        self.optimizer.zero_grad()
-        loss = -q_policy.mean()
-        # Backward pass
-        loss.backward()
-        self.optimizer.step()
-        return loss.item()
-
-    def get_action(self, obs):
-        return torch.clamp(self.forward(torch.from_numpy(obs).float()), min=-1.0, max=1.0)
+    def forward(self, state):
+        x = F.relu(self.lin1(state))
+        x = F.relu(self.lin2(x))
+        return torch.tanh(self.lin3(x))
+        # uncomment for pendulum (scaling actions to [-2, 2] gives better results)
+        #return 2.0 * torch.tanh(self.lin3(x))
