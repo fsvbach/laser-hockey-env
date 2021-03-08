@@ -29,6 +29,7 @@ ddpg_player = DDPGAgent(env.observation_space,
                          env.action_space)                
 
 losses, rewards = training.train(defense, q_agent, player2=False, name=name, max_episodes=1000)
+
 # # # losses, rewards = ddpg_train.train(attack, ddpg_agent, player2=False, name='shootdefense')
 
 plt.plot(training.running_mean(losses,64))

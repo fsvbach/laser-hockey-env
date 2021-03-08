@@ -61,14 +61,14 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.2,            # Epsilon in epsilon greedy policies                        
+            "eps": 0.1,            # Epsilon in epsilon greedy policies                        
             "discount": 0.99,
             "buffer_size": int(1e4),
             "batch_size": 128,
-            "learning_rate": 0.001, 
+            "learning_rate": 0.0002, 
             "update_rule": 10,
             "multistep": 3,
-            "omega": 0.25,
+            "omega": 0.5,
             # add additional parameters here        
         }
         self._config.update(userconfig)        
@@ -108,14 +108,14 @@ class DQNAgent(object):
         return self.convert(action)
     
     def commit_transition(self, transition):
-        print('coomit:',len(self.transition))
+        print('commit:',len(self.transition))
         ob, reward, ob_new, done = transition
         self.transition.append([ob, self.last_action, reward, ob_new, done])
         if len(self.transition) == self._config["multistep"]:
             self.push_transition()
         
     def push_transition(self):
-        print('oush:',len(self.transition))
+        print('push:',len(self.transition))
         ob, action, reward, ob_new, done = self.transition[0]
         gamma = 1
         if len(self.transition) > 1:
@@ -150,18 +150,18 @@ class DQNAgent(object):
             
             # target network estimates the values of the next states
             next_state_values = self.T.maxQ(next_states)
+            state_values = self.Q.maxQ(states)
+            
             
             # TD target is computed based on target network predictions
             target = rewards + np.power(gamma, n)*next_state_values
-
-            # only optimize the parameters of the Q network
-            fit_loss = self.Q.fit(states, actions, target)
             
             # update priorities in buffer
-            priorities = np.power(fit_loss, omega)
-            print(priorities)
-            print(priorities.shape)
+            priorities = np.power(np.abs(state_values-target), omega)
             self.buffer.update_priorities(indices, priorities)
+            
+            # only optimize the parameters of the Q network
+            fit_loss = self.Q.fit(states, actions, target)
             
             losses.append(fit_loss)    
 
