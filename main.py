@@ -18,7 +18,7 @@ env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
-name='attack_slow_update'
+name='attack'
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
