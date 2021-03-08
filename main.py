@@ -18,7 +18,7 @@ env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
-name='attack3'
+name='attack_slow_update'
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
@@ -42,7 +42,7 @@ ddpg_player = DDPGAgent(env.observation_space,
 # plt.close()
 
 player2 = h_env.BasicOpponent()
-stats = gameplay(attack, q_agent, player2=False, N=30, show=True)
+stats = gameplay(attack, q_agent, player2=False, N=50, show=True)
 print(stats)
 
 defense.close()
