@@ -24,13 +24,15 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
                 a2 = player2.act(obs2)
             (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
             total_reward+= reward
-            q_agent.store_transition((ob, reward, ob_new, done))            
+            q_agent.commit_transition([ob, reward, ob_new, done])            
             ob=ob_new        
             obs2 = env.obs_agent_two()
             if show:
                 time.sleep(1.0/fps)
                 env.render(mode='human')        
-            if done: break    
+            if done: 
+                q_agent.push_transition()
+                break    
         # print('buffer_size',q_agent.buffer.size)
         losses.extend(q_agent.train(32))
         stats.append([i,total_reward,t+1])    

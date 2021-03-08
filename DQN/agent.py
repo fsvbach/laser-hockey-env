@@ -61,16 +61,19 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.1,            # Epsilon in epsilon greedy policies                        
-            "discount": 0.95,
+            "eps": 0.2,            # Epsilon in epsilon greedy policies                        
+            "discount": 0.99,
             "buffer_size": int(1e5),
             "batch_size": 128,
             "learning_rate": 0.001, 
-            "update_rule": 3,
+            "update_rule": 10,
+            "multistep": 3,
+            "omega": 0.5,
             # add additional parameters here        
         }
         self._config.update(userconfig)        
         self._eps = self._config['eps']
+        self.transition = []
         self.buffer = Memory(max_size=self._config["buffer_size"])
         
         # complete here
@@ -91,9 +94,9 @@ class DQNAgent(object):
         torch.save(self.Q.state_dict(), filepath)
     
     def load_weights(self, filepath):
-        self.Q.load_state_dict(torch.load(filepath))
         self.Q.eval()
-    
+        self.Q.load_state_dict(torch.load(filepath))
+
     def act(self, observation, eps=None):
         if eps is None:
             eps = self._eps
@@ -104,19 +107,33 @@ class DQNAgent(object):
         self.last_action = action
         return self.convert(action)
     
-    def store_transition(self, transition):
-        (ob, reward, ob_new, done) = transition
-        self.buffer.add_transition((ob, self.last_action, reward, ob_new, done))
+    def commit_transition(self, transition):
+        ob, reward, ob_new, done = transition
+        self.transition.append([ob, self.last_action, reward, ob_new, done])
+        if len(self.transition) == self._config["multistep"]:
+            self.push_transition()
+        
+    def push_transition(self):
+        ob, action, reward, ob_new, done = self.transition[0]
+        gamma = 1
+        for t in self.transition[1:]:
+            _, _, r, ob_new, done = self.transition[-1]
+            reward += gamma * r
+            gamma *= self._config['discount']
+        
+        self.buffer.add_transition([ob, action, reward, ob_new, done])
+        self.transition = []
             
     def train(self, iter_fit=32):
         losses = []
+        k     = self._config["update_rule"]
+        gamma = self._config['discount']
+        n     = self._config['multistep']
         
         # update the target networks parameters every k train calls
-        k=self._config["update_rule"]
         self.train_iter +=1
         if self.train_iter % k == 0:
             self._update_target_net()
-        
      
         for i in range(iter_fit):
             
@@ -131,7 +148,7 @@ class DQNAgent(object):
             next_state_values = self.T.maxQ(next_states)
             
             # TD target is computed based on target network predictions
-            target = rewards + self._config['discount']*next_state_values
+            target = rewards + np.power(gamma, n)*next_state_values
 
             # only optimize the parameters of the Q network
             fit_loss = self.Q.fit(states, actions, target)
