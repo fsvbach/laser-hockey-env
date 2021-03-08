@@ -108,14 +108,14 @@ class DQNAgent(object):
         return self.convert(action)
     
     def commit_transition(self, transition):
-        print('commit:',len(self.transition))
+        #print('commit:',len(self.transition))
         ob, reward, ob_new, done = transition
         self.transition.append([ob, self.last_action, reward, ob_new, done])
-        if len(self.transition) == self._config["multistep"]:
+        if len(self.transition) == self._config["multistep"] or done:
             self.push_transition()
         
     def push_transition(self):
-        print('push:',len(self.transition))
+        #print('push:',len(self.transition))
         ob, action, reward, ob_new, done = self.transition[0]
         gamma = 1
         if len(self.transition) > 1:
