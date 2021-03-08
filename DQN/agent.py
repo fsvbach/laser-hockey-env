@@ -66,7 +66,7 @@ class DQNAgent(object):
             "buffer_size": int(1e5),
             "batch_size": 128,
             "learning_rate": 0.001, 
-            "update_rule": 3,
+            "update_rule": 20,
             # add additional parameters here        
         }
         self._config.update(userconfig)        
@@ -121,7 +121,7 @@ class DQNAgent(object):
         for i in range(iter_fit):
             
             # sample from the replay buffer
-            data   = self.buffer.sample(batch=self._config["batch_size"])
+            data, indices   = self.buffer.sample(batch=self._config["batch_size"])
             states      = np.stack(data[:,0]) # s_t
             next_states     = np.stack(data[:,3]) # s_t+1
             actions      = np.stack(data[:,1]) # a
@@ -129,10 +129,16 @@ class DQNAgent(object):
             
             # target network estimates the values of the next states
             next_state_values = self.T.maxQ(next_states)
+            state_values = self.Q.maxQ(states)
             
             # TD target is computed based on target network predictions
             target = rewards + self._config['discount']*next_state_values
-
+            
+            # update priorities in buffer
+            priorities = np.power(np.abs(target-state_values), self._config["omega"])
+            self.buffer.update_priorities(indices, priorities)
+                            
+            
             # only optimize the parameters of the Q network
             fit_loss = self.Q.fit(states, actions, target)
             
