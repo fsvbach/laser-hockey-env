@@ -13,7 +13,7 @@ class QFunction(Feedforward):
         self.optimizer=torch.optim.Adam(self.parameters(), 
                                         lr=learning_rate, 
                                         eps=0.0000625)
-        self.loss = torch.nn.MSELoss()
+        self.loss = torch.nn.SmoothL1Loss()
         
     def fit(self, observations, actions, targets):
         
@@ -65,7 +65,7 @@ class DQNAgent(object):
             "discount": 0.99,
             "buffer_size": int(1e4),
             "batch_size": 128,
-            "learning_rate": 0.0002, 
+            "learning_rate": 0.00002, 
             "update_rule": 10,
             "multistep": 3,
             "omega": 0.5,
