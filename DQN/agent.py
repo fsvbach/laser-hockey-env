@@ -116,10 +116,10 @@ class DQNAgent(object):
     def push_transition(self):
         ob, action, reward, ob_new, done = self.transition[0]
         gamma = 1
-        for t in self.transition[1:]:
-            _, _, r, ob_new, done = self.transition[-1]
-            reward += gamma * r
+        for transition in self.transition[1:]:
+            _, _, r, ob_new, done = transition
             gamma *= self._config['discount']
+            reward += gamma * r
         
         self.buffer.add_transition([ob, action, reward, ob_new, done])
         self.transition = []
