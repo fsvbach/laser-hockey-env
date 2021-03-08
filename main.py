@@ -18,7 +18,7 @@ env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
-name='attack'
+name='de'
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
@@ -30,7 +30,7 @@ ddpg_player = DDPGAgent(env.observation_space,
 
 losses, rewards = training.train(attack, q_agent, player2=False, name=name, max_episodes=10000)
 
-# # # losses, rewards = ddpg_train.train(attack, ddpg_agent, player2=False, name='shootdefense')
+## losses, rewards = ddpg_train.train(attack, ddpg_agent, player2=False, name='shootdefense')
 
 plt.plot(training.running_mean(losses,64))
 plt.savefig(f'Plots/{name}_losses')
@@ -43,8 +43,8 @@ plt.show()
 plt.close()
 
 # player2 = h_env.BasicOpponent()
-# stats = gameplay(attack, q_agent, player2=False, N=10, show=True, analyze=True)
-# print(stats)
+stats = gameplay(attack, q_agent, player2=False, N=100, show=True, analyze=False)
+print(stats)
 
 defense.close()
 attack.close()

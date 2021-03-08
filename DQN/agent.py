@@ -61,13 +61,13 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.1,            # Epsilon in epsilon greedy policies                        
+            "eps": 1,            # Epsilon in epsilon greedy policies                        
             "discount": 0.99,
-            "buffer_size": int(1e4),
+            "buffer_size": int(1e6),
             "batch_size": 128,
-            "learning_rate": 0.00002, 
-            "update_rule": 10,
-            "multistep": 3,
+            "learning_rate": 0.00025, 
+            "update_rule": 100,
+            "multistep": 5,
             "omega": 0.5,
             # add additional parameters here        
         }
@@ -96,6 +96,11 @@ class DQNAgent(object):
     def load_weights(self, filepath):
         self.Q.eval()
         self.Q.load_state_dict(torch.load(filepath))
+        
+    def reduce_exploration(self, x): 
+        if x < self._eps: 
+            self._eps -= x
+        
 
     def act(self, observation, eps=None):
         if eps is None:
@@ -106,6 +111,7 @@ class DQNAgent(object):
             action = self._action_space.sample()   
         self.last_action = action
         return self.convert(action)
+    
     
     def commit_transition(self, transition):
         #print('commit:',len(self.transition))
