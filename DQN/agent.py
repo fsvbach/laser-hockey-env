@@ -63,7 +63,7 @@ class DQNAgent(object):
         self._config = {
             "eps": 0.2,            # Epsilon in epsilon greedy policies                        
             "discount": 0.99,
-            "buffer_size": int(1e5),
+            "buffer_size": int(1e4),
             "batch_size": 128,
             "learning_rate": 0.001, 
             "update_rule": 10,
@@ -159,6 +159,8 @@ class DQNAgent(object):
             
             # update priorities in buffer
             priorities = np.power(fit_loss, omega)
+            print(priorities)
+            print(priorities.shape)
             self.buffer.update_priorities(indices, priorities)
             
             losses.append(fit_loss)    

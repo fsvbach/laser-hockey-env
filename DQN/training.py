@@ -31,7 +31,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
                 time.sleep(1.0/fps)
                 env.render(mode='human')        
             if done: 
-                q_agent.push_transition()
+                #q_agent.push_transition()
                 break    
         # print('buffer_size',q_agent.buffer.size)
         losses.extend(q_agent.train(32))

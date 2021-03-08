@@ -30,12 +30,14 @@ class Memory():
         
         self.normalization_constant += new_priorities - old_priorities 
         self.transitions[indices, 5] = td_errors + self.eps
+        print(td_errors.shape)
         self.max_priority = np.max(np.max(td_errors) + self.eps, self.max_priority)
 
     def sample(self, batch=1):
         if batch > self.size:
             batch = self.size
-        indices =np.random.choice(range(self.size), size=batch, replace=False, p=self.transitions[:,5]/self.normalization_constant)
+        priorities = self.transitions[:,5].astype(np.float64)/self.normalization_constant
+        indices =np.random.choice(range(self.max_size), size=batch, replace=False, p=priorities)
         return self.transitions[indices,:], indices
 
 
