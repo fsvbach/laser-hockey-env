@@ -68,7 +68,7 @@ class DQNAgent(object):
             "learning_rate": 0.001, 
             "update_rule": 10,
             "multistep": 3,
-            "omega": 0.25,
+            "omega": 0.5,
             # add additional parameters here        
         }
         self._config.update(userconfig)        
@@ -150,16 +150,18 @@ class DQNAgent(object):
             
             # target network estimates the values of the next states
             next_state_values = self.T.maxQ(next_states)
+            state_values = self.Q.maxQ(states)
+            
             
             # TD target is computed based on target network predictions
             target = rewards + np.power(gamma, n)*next_state_values
-
-            # only optimize the parameters of the Q network
-            fit_loss = self.Q.fit(states, actions, target)
             
             # update priorities in buffer
-            priorities = np.power(fit_loss, omega)
+            priorities = np.power(np.abs(state_values-target), omega)
             self.buffer.update_priorities(indices, priorities)
+            
+            # only optimize the parameters of the Q network
+            fit_loss = self.Q.fit(states, actions, target)
             
             losses.append(fit_loss)    
 
