@@ -4,9 +4,9 @@
 '''
 import torch
 import numpy as np
-import memory
-from actor import Actor
-from critic import Critic
+from .memory import Memory
+from .actor import Actor
+from .critic import Critic
 
 
 class DDPGAgent(object):
@@ -29,7 +29,7 @@ class DDPGAgent(object):
         }
         self._config.update(userconfig)
 
-        self.buffer = memory.Memory(max_size=self._config["buffer_size"])
+        self.buffer = Memory(max_size=self._config["buffer_size"])
         self.update_rate = self._config["update_rate"]
         self.hidden_size = self._config["hidden_size"]
         self.obs_dim = self._observation_space.shape[0]
@@ -64,13 +64,26 @@ class DDPGAgent(object):
         for target_param, param in zip(self.critic_target.parameters(), self.critic.parameters()):
             target_param.data.copy_(param.data * self.update_rate + target_param.data * (1.0 - self.update_rate))
 
+    def save_weights(self, filepath):
+        torch.save(self.actor.state_dict(), filepath + "_actor")
+        torch.save(self.critic.state_dict(), filepath + "_critic")
+    
+    def load_weights(self, filepath):
+        self.actor.load_state_dict(torch.load(filepath + "_actor"))
+        self.actor.eval()
+        self.critic.load_state_dict(torch.load(filepath + "_critic"))
+        self.critic.eval()
+
 
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
     
     def act(self, obs):
         obs = torch.from_numpy(obs).float().unsqueeze(0)
-        return self.actor.forward(obs).detach().numpy()[0,0]
+        # uncomment for pendulum env
+        #return self.actor.forward(obs).detach().numpy()[0,0]
+        return self.actor.forward(obs).detach().numpy().flatten()
+
 
 
     def train(self, iter_fit=32):
