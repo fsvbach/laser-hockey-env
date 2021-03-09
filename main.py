@@ -32,9 +32,8 @@ ddpg_player = DDPGAgent(env.observation_space,
 losses, rewards = training.train(env,
                                  q_agent, 
                                  player2=player2, 
-                                 name=name, 
+                                 name=name+'_extend', 
                                  max_episodes=30000)
-
 
 stats = gameplay(env, q_agent, player2=False, N=10, show=True, analyze=False)
 print(stats)
