@@ -23,7 +23,7 @@ player2 = h_env.BasicOpponent()
 q_agent = agent.DQNAgent(env.observation_space, 
                          env.discrete_action_space,
                          convert_func =  env.discrete_to_continous_action,
-                        pretrained   = f'DQN/weights/{name}')
+                         pretrained   = f'DQN/weights/{name}')
 
 
 ddpg_player = DDPGAgent(env.observation_space, 
