@@ -13,7 +13,7 @@ class DDPGAgent(object):
     """
     Agent implementing DDPG.
     """
-    def __init__(self, observation_space, action_space, **userconfig):
+    def __init__(self, observation_space, action_space, pretrained=False, **userconfig):
 
         self._observation_space = observation_space
         self._action_space = action_space
@@ -55,6 +55,12 @@ class DDPGAgent(object):
             p.requires_grad = False
         
         self.train_iter = 0
+
+        if pretrained:
+            try:
+                self.load_weights(pretrained)
+            except:
+                print(f'ERROR: Could not load weights from {pretrained}')
 
     def _update_actor_target_net(self):
         for target_param, param in zip(self.actor_target.parameters(), self.actor.parameters()):
@@ -117,7 +123,7 @@ class DDPGAgent(object):
 
             critic_loss = self.critic.fit(q, td_target)
 
-            losses.append([actor_loss, critic_loss])
+            losses.append(actor_loss + critic_loss)
             
             self.train_iter+=1
             #if self.train_iter % self._config["update_target_every"] == 0:
@@ -130,16 +136,16 @@ class DDPGAgent(object):
 
 
 class OUNoise(object):
-    def __init__(self, action_space, mu=0.0, theta=0.15, max_sigma=0.3, min_sigma=0.3, decay_period=100000):
+    def __init__(self, action_dim, action_low, action_high, mu=0.0, theta=0.15, max_sigma=0.3, min_sigma=0.3, decay_period=100000):
         self.mu           = mu
         self.theta        = theta
         self.sigma        = max_sigma
         self.max_sigma    = max_sigma
         self.min_sigma    = min_sigma
         self.decay_period = decay_period
-        self.action_dim   = action_space.shape[0]
-        self.low          = action_space.low
-        self.high         = action_space.high
+        self.action_dim   = action_dim
+        self.low          = action_low
+        self.high         = action_high
         self.reset()
         
     def reset(self):
