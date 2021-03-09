@@ -633,7 +633,8 @@ class HockeyEnv(gym.Env, EzPickle):
       self.done = True
 
     info = self._get_info()
-    reward = self._compute_reward() + info["reward_closeness_to_puck"] + info["reward_touch_puck"] + info["reward_puck_direction"]
+    reward = self._compute_reward() 
+    #+ info["reward_closeness_to_puck"] + info["reward_touch_puck"] + info["reward_puck_direction"]
     
 
     self.closest_to_goal_dist = min(self.closest_to_goal_dist,

@@ -12,7 +12,7 @@ class QFunction(Feedforward):
                          output_size=action_dim)
         self.optimizer=torch.optim.Adam(self.parameters(), 
                                         lr=learning_rate, 
-                                        eps=0.00001)
+                                        eps=0.000625)
         self.loss = torch.nn.SmoothL1Loss()
         
     def fit(self, observations, actions, targets):
@@ -53,7 +53,7 @@ class DQNAgent(object):
     """
     Agent implementing Q-learning with NN function approximation.    
     """
-    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, **userconfig):
+    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, train=False, **userconfig):
         
         self._observation_space = observation_space
         self._observation_n = len(observation_space.low)
@@ -61,16 +61,22 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.1,            # Epsilon in epsilon greedy policies                        
-            "discount": 0.95,
-            "buffer_size": int(1e5),
+            "eps": 1,            # Epsilon in epsilon greedy policies                        
+            "discount": 0.99,
+            "buffer_size": int(1e4),
             "batch_size": 128,
-            "learning_rate": 0.001, 
-            "update_rule": 3,
+            "learning_rate": 0.00025, 
+            "update_rule": 100,
+            "multistep": 5,
+            "omega": 0.5,
             # add additional parameters here        
         }
         self._config.update(userconfig)        
-        self._eps = self._config['eps']
+        if train: 
+            self._eps = self._config['eps']
+        else:
+            self._eps = 0
+        self.transition = []
         self.buffer = Memory(max_size=self._config["buffer_size"])
         
         # complete here
@@ -91,9 +97,14 @@ class DQNAgent(object):
         torch.save(self.Q.state_dict(), filepath)
     
     def load_weights(self, filepath):
-        self.Q.load_state_dict(torch.load(filepath))
         self.Q.eval()
-    
+        self.Q.load_state_dict(torch.load(filepath))
+        
+    def reduce_exploration(self, x): 
+        if x < self._eps: 
+            self._eps -= x
+        
+
     def act(self, observation, eps=None):
         if eps is None:
             eps = self._eps
@@ -104,24 +115,43 @@ class DQNAgent(object):
         self.last_action = action
         return self.convert(action)
     
-    def store_transition(self, transition):
-        (ob, reward, ob_new, done) = transition
-        self.buffer.add_transition((ob, self.last_action, reward, ob_new, done))
+    
+    def commit_transition(self, transition):
+        #print('commit:',len(self.transition))
+        ob, reward, ob_new, done = transition
+        self.transition.append([ob, self.last_action, reward, ob_new, done])
+        if len(self.transition) == self._config["multistep"] or done:
+            self.push_transition()
+        
+    def push_transition(self):
+        #print('push:',len(self.transition))
+        ob, action, reward, ob_new, done = self.transition[0]
+        gamma = 1
+        if len(self.transition) > 1:
+            for transition in self.transition[1:]:
+                _, _, r, ob_new, done = transition
+                gamma *= self._config['discount']
+                reward += gamma * r
+        
+        self.buffer.add_transition([ob, action, reward, ob_new, done])
+        self.transition = []
             
     def train(self, iter_fit=32):
         losses = []
+        omega = self._config["omega"]
+        k     = self._config["update_rule"]
+        gamma = self._config['discount']
+        n     = self._config['multistep']
         
         # update the target networks parameters every k train calls
-        k=self._config["update_rule"]
-        self.train_iter +=1
         if self.train_iter % k == 0:
             self._update_target_net()
-        
+        self.train_iter +=1
      
         for i in range(iter_fit):
             
             # sample from the replay buffer
-            data   = self.buffer.sample(batch=self._config["batch_size"])
+            data, indices   = self.buffer.sample(batch=self._config["batch_size"])
             states      = np.stack(data[:,0]) # s_t
             next_states     = np.stack(data[:,3]) # s_t+1
             actions      = np.stack(data[:,1]) # a
@@ -129,10 +159,16 @@ class DQNAgent(object):
             
             # target network estimates the values of the next states
             next_state_values = self.T.maxQ(next_states)
+            state_values = self.Q.maxQ(states)
+            
             
             # TD target is computed based on target network predictions
-            target = rewards + self._config['discount']*next_state_values
-
+            target = rewards + np.power(gamma, n)*next_state_values
+            
+            # update priorities in buffer
+            priorities = np.power(np.abs(state_values-target), omega)
+            self.buffer.update_priorities(indices, priorities)
+            
             # only optimize the parameters of the Q network
             fit_loss = self.Q.fit(states, actions, target)
             

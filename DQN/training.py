@@ -13,6 +13,9 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
     fps=50
     
     for i in range(max_episodes):
+        if i % (max_episodes/10) == 0 and i != 0: 
+            q_agent.reduce_exploration(0.1)
+            print("current buffer size: ", q_agent.buffer.size)
         # print("Starting a new episode")    
         total_reward = 0
         obs2 = ob = env.reset()
@@ -24,13 +27,16 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
                 a2 = player2.act(obs2)
             (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
             total_reward+= reward
-            q_agent.store_transition((ob, reward, ob_new, done))            
-            ob=ob_new        
-            obs2 = env.obs_agent_two()
             if show:
                 time.sleep(1.0/fps)
                 env.render(mode='human')        
-            if done: break    
+            q_agent.commit_transition([ob, reward, ob_new, done])  
+            if done: 
+                #q_agent.push_transition()
+                break    
+            ob=ob_new        
+            obs2 = env.obs_agent_two()
+            
         # print('buffer_size',q_agent.buffer.size)
         losses.extend(q_agent.train(32))
         stats.append([i,total_reward,t+1])    
