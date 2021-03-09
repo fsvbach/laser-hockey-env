@@ -18,13 +18,14 @@ env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
+
 load_weights='attack'
 store_weights='basic_opponent'
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
                         convert_func =  env.discrete_to_continous_action,
-                        pretrained   = f'DQN/weights/{load_weights}', train=True)
+                        pretrained   = f'DQN/weights/{load_weights}')
 
 
 ddpg_player = DDPGAgent(env.observation_space, 

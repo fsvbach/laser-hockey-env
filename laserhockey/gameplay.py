@@ -18,7 +18,7 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
         obs = env.reset()
         obs_agent2 = env.obs_agent_two()
         for _ in range(max_len):
-            a1 = player1.act(obs) 
+            a1 = player1.act(obs, eps=0) 
             a2 = [0,0.,0,0] 
             if player2:
                 a2 = player2.act(obs_agent2)

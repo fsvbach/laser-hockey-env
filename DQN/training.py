@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 def running_mean(x, N):
     cumsum = np.cumsum(np.insert(x, 0, 0)) 
@@ -15,6 +16,8 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0 and i != 0: 
             q_agent.reduce_exploration(0.1)
+            q_agent.save_weights(f'DQN/weights/{name}_{i}')
+            plt.plot(running_mean(losses,64))
             print("current buffer size: ", q_agent.buffer.size)
         # print("Starting a new episode")    
         total_reward = 0
@@ -30,9 +33,8 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
             if show:
                 time.sleep(1.0/fps)
                 env.render(mode='human')        
-            q_agent.commit_transition([ob, reward, ob_new, done])  
+            q_agent.store_transition([ob, reward, ob_new, done])  
             if done: 
-                #q_agent.push_transition()
                 break    
             ob=ob_new        
             obs2 = env.obs_agent_two()
@@ -43,8 +45,21 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
         
         if ((i-1)%20==0):
             print("Episode {}: Done after {} steps. Reward: {}".format(i, t+1, total_reward))
+        
+        # if ((i-1)%10000==0):
+        #     q_agent.save_weights(f'DQN/weights/{name}_{i}')
             
-    
     q_agent.save_weights(f'DQN/weights/{name}')
+    rewards =  [r[1] for r in stats]
+    
+    plt.plot(running_mean(losses,64))
+    plt.savefig(f'Plots/{name}_losses')
+    plt.show()
+    plt.close()
+    
+    plt.plot(running_mean(rewards,200))
+    plt.savefig(f'Plots/{name}_rewards')
+    plt.show()
+    plt.close()
 
-    return losses, [r[1] for r in stats]
+    return losses, rewards
