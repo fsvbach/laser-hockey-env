@@ -19,9 +19,9 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
                         action_high=env.action_space.high,
                         max_sigma=0.6, min_sigma=0.2) """
     
-    noise = OUNoise(action_dim=env.num_actions, 
-                        action_low=env.action_space.low[:4], 
-                        action_high=env.action_space.high[:4])
+    #noise = OUNoise(action_dim=env.num_actions, 
+    #                    action_low=env.action_space.low[:4], 
+    #                    action_high=env.action_space.high[:4])
 
     stats = []
     losses = []
@@ -29,29 +29,24 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
     avg_rewards = []
     fps=50
     show = False
+    eps = 1
 
     for i in range(max_episodes):
-        #print("Starting a new episode")
         total_reward = 0
-        max_sigma = 0.6
-        min_sigma = 0.3
-        if i  > 2 * max_episodes / 10:
-            max_sigma = 0.5
-        if i > max_episodes / 2:
-            max_sigma = 0.4
-        if i > 3 * max_episodes / 4:
-            max_sigma = 0.3
-
-        noise.reset(max_sigma=max_sigma, min_sigma=min_sigma)
-        #mode = i % 3
+        cnt = 1
+        if i > (cnt * max_episodes / 10):
+            eps -= 0.1
+            cnt += 1
+            
+        #noise.reset(max_sigma=0.3, min_sigma=0.3)
         ob = env.reset()
         ob2 = env.reset()
         episode_losses = 0
         for step in range(max_steps):
             
             done = False
-            act = agent.act(ob)
-            act = noise.get_action(act, step)
+            act = agent.act(ob, eps)
+            #act = noise.get_action(act, step)
             act2 = [0,0.,0,0]
 
             # if two players only add noise to first 4 action elements
@@ -59,8 +54,6 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
                 act2 = player2.act(ob2)
 
             (ob_new, reward, done, _info) = env.step(np.hstack([act,act2]))
-            #print("reward ", reward)
-            #print("info ", _info)
             reward = reward + _info["winner"] + _info["reward_closeness_to_puck"] + _info["reward_touch_puck"] + _info["reward_puck_direction"]
             total_reward += reward
             agent.store_transition((ob, act, reward, ob_new, done))      

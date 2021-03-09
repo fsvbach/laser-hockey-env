@@ -15,6 +15,7 @@ class DDPGAgent(object):
     """
     def __init__(self, env, pretrained=False, **userconfig):
 
+        self.env = env
         self._observation_space = env.observation_space
         self.action_dim = env.num_actions
         self.obs_dim = self._observation_space.shape[0]
@@ -22,7 +23,7 @@ class DDPGAgent(object):
         self._config = {
             "discount": 0.99,
             "hidden_size": 256,
-            "buffer_size": int(1e5),
+            "buffer_size": int(1e5), 
             "batch_size": 128,
             "actor_lr": 1e-4,
             "critic_lr": 1e-3,
@@ -39,7 +40,6 @@ class DDPGAgent(object):
         self.actor_target  = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
         self.critic        = Critic(input_size=self.obs_dim + self.action_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["critic_lr"])
         self.critic_target = Critic(input_size=self.obs_dim + self.action_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
-
         # copy params into target nets for initialization
         for target_param, param in zip(self.actor_target.parameters(), self.actor.parameters()):
             target_param.data.copy_(param.data)
@@ -84,11 +84,15 @@ class DDPGAgent(object):
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
     
-    def act(self, obs):
+    def act(self, obs, eps=0):
         obs = torch.from_numpy(obs).float().unsqueeze(0)
-        # uncomment for pendulum env
-        #return self.actor.forward(obs).detach().numpy()[0,0]
-        return self.actor.forward(obs).detach().numpy().flatten()
+        if np.random.random() > eps:
+            # uncomment for pendulum env
+            #return self.actor.forward(obs).detach().numpy()[0,0]
+            return self.actor.forward(obs).detach().numpy().flatten()
+        else:
+            return self.env.action_space.sample()[:self.action_dim]
+        
 
 
 
@@ -112,7 +116,6 @@ class DDPGAgent(object):
             rew = torch.FloatTensor(rew)
 
             gamma=self._config['discount']
-
             q = self.critic.forward(s, a)
             a_prime = self.actor_target.forward(s_prime)
             next_q = self.critic_target.forward(s_prime, a_prime.detach())

@@ -19,7 +19,7 @@ attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
 
-name='ddpg-normal-params7-25000'
+name='ddpg-normal-eps-10000'
 
 
 ddpg_player = DDPGAgent(env,
@@ -28,7 +28,7 @@ ddpg_player = DDPGAgent(env,
                          update_rate=0.05,
                          discount=0.9, update_target_every=20)
 
-losses, rewards = ddpg_train.train(normal, ddpg_player, player2=False, name=name, max_episodes=1000, show=False)
+losses, rewards = ddpg_train.train(normal, ddpg_player, player2=False, name=name, max_episodes=10000, show=False)
 
 plt.plot(training.running_mean(losses,64))
 plt.savefig(f'Plots/{name}_losses')
@@ -48,7 +48,7 @@ plt.close()
                          discount=0.9, update_target_every=5, pretrained='DDPG/weights/ddpg-attack-params5') """
 
 # player2 = h_env.BasicOpponent()
-stats = gameplay(attack, ddpg_player, player2=False, N=100, show=False, analyze=False)
+stats = gameplay(normal, ddpg_player, player2=False, N=100, show=False, analyze=False)
 print(stats)
 
 defense.close()
