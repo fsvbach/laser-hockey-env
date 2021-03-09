@@ -13,10 +13,12 @@ class DDPGAgent(object):
     """
     Agent implementing DDPG.
     """
-    def __init__(self, observation_space, action_space, pretrained=False, **userconfig):
+    def __init__(self, env, pretrained=False, **userconfig):
 
-        self._observation_space = observation_space
-        self._action_space = action_space
+        self._observation_space = env.observation_space
+        self.action_dim = env.num_actions
+        self.obs_dim = self._observation_space.shape[0]
+
         self._config = {
             "discount": 0.99,
             "hidden_size": 256,
@@ -32,8 +34,6 @@ class DDPGAgent(object):
         self.buffer = Memory(max_size=self._config["buffer_size"])
         self.update_rate = self._config["update_rate"]
         self.hidden_size = self._config["hidden_size"]
-        self.obs_dim = self._observation_space.shape[0]
-        self.action_dim = self._action_space.shape[0]
 
         self.actor         = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["actor_lr"])
         self.actor_target  = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
@@ -94,6 +94,8 @@ class DDPGAgent(object):
 
     def train(self, iter_fit=32):
         losses = []
+        critic_l = 0
+        actor_l = 0
 
         for i in range(iter_fit):
             # sample from the replay buffer
@@ -122,14 +124,16 @@ class DDPGAgent(object):
             self.actor.optimizer.step()
 
             critic_loss = self.critic.fit(q, td_target)
+            critic_l += critic_loss
+            actor_l += actor_loss
 
             losses.append(actor_loss + critic_loss)
-            
-            self.train_iter+=1
-            #if self.train_iter % self._config["update_target_every"] == 0:
-            self._update_actor_target_net()
-            self._update_critic_target_net()
 
+            self.train_iter+=1
+            if self.train_iter % self._config["update_target_every"] == 0:
+                self._update_actor_target_net()
+                self._update_critic_target_net()
+            
         return losses
 
 
@@ -148,8 +152,10 @@ class OUNoise(object):
         self.high         = action_high
         self.reset()
         
-    def reset(self):
+    def reset(self, max_sigma=0.3, min_sigma=0.3):
         self.state = np.ones(self.action_dim) * self.mu
+        self.max_sigma = max_sigma
+        self.min_sigma = min_sigma
         
     def evolve_state(self):
         x  = self.state
