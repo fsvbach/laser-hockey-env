@@ -12,7 +12,7 @@ class QFunction(Feedforward):
                          output_size=action_dim)
         self.optimizer=torch.optim.Adam(self.parameters(), 
                                         lr=learning_rate, 
-                                        eps=0.0000625)
+                                        eps=0.000625)
         self.loss = torch.nn.SmoothL1Loss()
         
     def fit(self, observations, actions, targets):
@@ -53,7 +53,7 @@ class DQNAgent(object):
     """
     Agent implementing Q-learning with NN function approximation.    
     """
-    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, **userconfig):
+    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, train=False, **userconfig):
         
         self._observation_space = observation_space
         self._observation_n = len(observation_space.low)
@@ -63,7 +63,7 @@ class DQNAgent(object):
         self._config = {
             "eps": 1,            # Epsilon in epsilon greedy policies                        
             "discount": 0.99,
-            "buffer_size": int(1e6),
+            "buffer_size": int(1e4),
             "batch_size": 128,
             "learning_rate": 0.00025, 
             "update_rule": 100,
@@ -72,7 +72,10 @@ class DQNAgent(object):
             # add additional parameters here        
         }
         self._config.update(userconfig)        
-        self._eps = self._config['eps']
+        if train: 
+            self._eps = self._config['eps']
+        else:
+            self._eps = 0
         self.transition = []
         self.buffer = Memory(max_size=self._config["buffer_size"])
         

@@ -15,6 +15,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0 and i != 0: 
             q_agent.reduce_exploration(0.1)
+            print("current buffer size: ", q_agent.buffer.size)
         # print("Starting a new episode")    
         total_reward = 0
         obs2 = ob = env.reset()

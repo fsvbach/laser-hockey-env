@@ -18,17 +18,17 @@ env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
-name='de'
+name='attack'
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          Discrete(8),
                         convert_func =  env.discrete_to_continous_action,
-                        pretrained   = f'DQN/weights/{name}')
+                        pretrained   = f'DQN/weights/{name}', train=True)
 
 ddpg_player = DDPGAgent(env.observation_space, 
                          env.action_space)                
 
-losses, rewards = training.train(attack, q_agent, player2=False, name=name, max_episodes=10000)
+losses, rewards = training.train(attack, q_agent, player2=False, name=name, max_episodes=100000)
 
 ## losses, rewards = ddpg_train.train(attack, ddpg_agent, player2=False, name='shootdefense')
 
@@ -43,7 +43,7 @@ plt.show()
 plt.close()
 
 # player2 = h_env.BasicOpponent()
-stats = gameplay(attack, q_agent, player2=False, N=100, show=True, analyze=False)
+stats = gameplay(attack, q_agent, player2=False, N=10, show=True, analyze=False)
 print(stats)
 
 defense.close()
