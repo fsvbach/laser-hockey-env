@@ -13,7 +13,7 @@ class DDPGAgent(object):
     """
     Agent implementing DDPG.
     """
-    def __init__(self, observation_space, action_space, **userconfig):
+    def __init__(self, observation_space, action_space, pretrained=False, **userconfig):
 
         self._observation_space = observation_space
         self._action_space = action_space
@@ -55,6 +55,12 @@ class DDPGAgent(object):
             p.requires_grad = False
         
         self.train_iter = 0
+
+        if pretrained:
+            try:
+                self.load_weights(pretrained)
+            except:
+                print(f'ERROR: Could not load weights from {pretrained}')
 
     def _update_actor_target_net(self):
         for target_param, param in zip(self.actor_target.parameters(), self.actor.parameters()):
@@ -138,7 +144,6 @@ class OUNoise(object):
         self.min_sigma    = min_sigma
         self.decay_period = decay_period
         self.action_dim   = action_dim
-        print("action dim ", self.action_dim)
         self.low          = action_low
         self.high         = action_high
         self.reset()
@@ -155,5 +160,4 @@ class OUNoise(object):
     def get_action(self, action, t=0):
         ou_state = self.evolve_state()
         self.sigma = self.max_sigma - (self.max_sigma - self.min_sigma) * min(1.0, t / self.decay_period)
-        print("OU", ou_state.shape)
         return np.clip(action + ou_state, self.low, self.high)
