@@ -7,7 +7,7 @@ def running_mean(x, N):
     return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 
-def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=False, name='test'):
+def train(env, q_agent, player2, max_episodes=200, max_steps=300, show=False, name='test'):
     
     stats = []
     losses = []
@@ -27,7 +27,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
             done = False        
             a1 = q_agent.act(ob)
             a2 = [0,0.,0,0] 
-            if player2:
+            if env.mode == 0:
                 a2 = player2.act(obs2)
             (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
             total_reward+= reward
