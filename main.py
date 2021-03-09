@@ -17,13 +17,17 @@ from DDPG.ddpg_agent import DDPGAgent
 name='gameplay_30000'
 mode=0
 
+
+load_weights=False
+store_weights='basic_opponent'
+
 env = h_env.HockeyEnv(mode=mode)
 player2 = h_env.BasicOpponent()
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          env.discrete_action_space,
-                         convert_func =  env.discrete_to_continous_action,
-                         pretrained   = f'DQN/weights/{name}')
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = f'DQN/weights/{load_weights}')
 
 
 ddpg_player = DDPGAgent(env.observation_space, 
@@ -34,6 +38,7 @@ ddpg_player = DDPGAgent(env.observation_space,
 #                                  player2=player2, 
 #                                  name=name, 
 #                                  max_episodes=50000)
+
 
 stats = gameplay(env, q_agent, player2=player2, N=10, show=True, analyze=False)
 print(stats)
