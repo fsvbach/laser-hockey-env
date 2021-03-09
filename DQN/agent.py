@@ -53,7 +53,7 @@ class DQNAgent(object):
     """
     Agent implementing Q-learning with NN function approximation.    
     """
-    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, train=False, **userconfig):
+    def __init__(self, observation_space, action_space, convert_func=lambda x: x, pretrained=False, **userconfig):
         
         self._observation_space = observation_space
         self._observation_n = len(observation_space.low)
@@ -63,7 +63,7 @@ class DQNAgent(object):
         self._config = {
             "eps": 1,            # Epsilon in epsilon greedy policies                        
             "discount": 0.99,
-            "buffer_size": int(1e4),
+            "buffer_size": int(2e4),
             "batch_size": 128,
             "learning_rate": 0.00025, 
             "update_rule": 100,
@@ -72,11 +72,8 @@ class DQNAgent(object):
             # add additional parameters here        
         }
         self._config.update(userconfig)        
-        if train: 
-            self._eps = self._config['eps']
-        else:
-            self._eps = 0
         self.transition = []
+        self._eps   = self._config["eps"]
         self.buffer = Memory(max_size=self._config["buffer_size"])
         
         # complete here
@@ -116,25 +113,19 @@ class DQNAgent(object):
         return self.convert(action)
     
     
-    def commit_transition(self, transition):
-        #print('commit:',len(self.transition))
+    def store_transition(self, transition):
         ob, reward, ob_new, done = transition
         self.transition.append([ob, self.last_action, reward, ob_new, done])
         if len(self.transition) == self._config["multistep"] or done:
-            self.push_transition()
-        
-    def push_transition(self):
-        #print('push:',len(self.transition))
-        ob, action, reward, ob_new, done = self.transition[0]
-        gamma = 1
-        if len(self.transition) > 1:
-            for transition in self.transition[1:]:
-                _, _, r, ob_new, done = transition
-                gamma *= self._config['discount']
-                reward += gamma * r
-        
-        self.buffer.add_transition([ob, action, reward, ob_new, done])
-        self.transition = []
+            ob, action, reward, ob_new, done = self.transition[0]
+            gamma = 1
+            if len(self.transition) > 1:
+                for transition in self.transition[1:]:
+                    _, _, r, ob_new, done = transition
+                    gamma *= self._config['discount']
+                    reward += gamma * r
+            self.buffer.add_transition([ob, action, reward, ob_new, done])
+            self.transition = []
             
     def train(self, iter_fit=32):
         losses = []
