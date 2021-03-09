@@ -144,9 +144,9 @@ class DQNAgent(object):
         n     = self._config['multistep']
         
         # update the target networks parameters every k train calls
-        self.train_iter +=1
         if self.train_iter % k == 0:
             self._update_target_net()
+        self.train_iter +=1
      
         for i in range(iter_fit):
             
