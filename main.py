@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 from DDPG import train as ddpg_train
 from DDPG.ddpg_agent import DDPGAgent
 
-name='defense'
-mode=2
+name='gameplay_30000'
+mode=0
 
 env = h_env.HockeyEnv(mode=mode)
 player2 = h_env.BasicOpponent()
@@ -29,13 +29,13 @@ q_agent = agent.DQNAgent(env.observation_space,
 ddpg_player = DDPGAgent(env.observation_space, 
                          env.action_space)                
 
-losses, rewards = training.train(env,
-                                 q_agent, 
-                                 player2=player2, 
-                                 name=name+'_extend', 
-                                 max_episodes=30000)
+# losses, rewards = training.train(env,
+#                                  q_agent, 
+#                                  player2=player2, 
+#                                  name=name, 
+#                                  max_episodes=50000)
 
-stats = gameplay(env, q_agent, player2=False, N=10, show=True, analyze=False)
+stats = gameplay(env, q_agent, player2=player2, N=10, show=True, analyze=False)
 print(stats)
 
 env.close()

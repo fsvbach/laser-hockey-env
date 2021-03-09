@@ -16,6 +16,7 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, show=False, na
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0 and i != 0: 
             q_agent.reduce_exploration(0.1)
+            q_agent._config['discount'] += 0.05
             q_agent.save_weights(f'DQN/weights/{name}_{i}')
             plt.plot(running_mean(losses,64))
             plt.show()
