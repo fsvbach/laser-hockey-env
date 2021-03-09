@@ -19,11 +19,11 @@ attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
 
-load_weights='attack'
+load_weights=False
 store_weights='basic_opponent'
 
 q_agent = agent.DQNAgent(env.observation_space, 
-                         Discrete(8),
+                         env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
                         pretrained   = f'DQN/weights/{load_weights}')
 
@@ -34,7 +34,7 @@ ddpg_player = DDPGAgent(env.observation_space,
 player2 = h_env.BasicOpponent()
 
 
-losses, rewards = training.train(env, q_agent, player2=player2, name=store_weights, max_episodes=10000)
+losses, rewards = training.train(env, q_agent, player2=player2, name=store_weights, max_episodes=50000)
 
 plt.plot(training.running_mean(losses,64))
 plt.savefig(f'Plots/{store_weights}_losses')

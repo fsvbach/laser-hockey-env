@@ -18,10 +18,11 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, show=Fal
             q_agent.reduce_exploration(0.1)
             q_agent.save_weights(f'DQN/weights/{name}_{i}')
             plt.plot(running_mean(losses,64))
+            plt.show()
             print("current buffer size: ", q_agent.buffer.size)
         # print("Starting a new episode")    
         total_reward = 0
-        obs2 = ob = env.reset()
+        obs2 = ob = env.reset(mode=i%3)
         for t in range(max_steps):
             done = False        
             a1 = q_agent.act(ob)
