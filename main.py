@@ -18,14 +18,21 @@ from TD3.agent import TD3
 name='gameplay'
 mode=0
 
-
 env = h_env.HockeyEnv(mode=mode)
+
 player2 = h_env.BasicOpponent(weak=True)
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
                         pretrained   = f'DQN/weights/{name}')
+
+ddpg_agent = DDPGAgent(env,
+                         actor_lr=1e-4,
+                         critic_lr=1e-3,
+                         update_rate=0.05,
+                         discount=0.9, update_target_every=20,
+                         pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
 
 ddpg = DDPGAgent(env,
                          actor_lr=1e-4,
@@ -36,12 +43,6 @@ ddpg = DDPGAgent(env,
 
 td3 = TD3(18, 4, 1.0, env)
 td3.load(filename='stronger')
-
-# losses, rewards = training.train(env,
-#                                  q_agent, 
-#                                  player2=player2, 
-#                                  name=name, 
-#                                  max_episodes=50000)
 
 
 stats = gameplay(env, td3, player2=ddpg, N=10, show=True, analyze=False)
