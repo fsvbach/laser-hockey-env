@@ -19,9 +19,10 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
                         action_high=env.action_space.high,
                         max_sigma=0.6, min_sigma=0.2) """
     
-    #noise = OUNoise(action_dim=env.num_actions, 
-    #                    action_low=env.action_space.low[:4], 
-    #                    action_high=env.action_space.high[:4])
+    noise = OUNoise(action_dim=env.num_actions, 
+                        action_low=env.action_space.low[:4], 
+                        action_high=env.action_space.high[:4],
+                        max_sigma=0.3, min_sigma=0.2)
 
     stats = []
     losses = []
@@ -30,23 +31,22 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
     fps=50
     show = False
     eps = 1
+    cnt = 1
 
     for i in range(max_episodes):
-        total_reward = 0
-        cnt = 1
-        if i > (cnt * max_episodes / 10):
-            eps -= 0.1
-            cnt += 1
-            
-        #noise.reset(max_sigma=0.3, min_sigma=0.3)
+        noise.reset()
         ob = env.reset()
         ob2 = env.reset()
         episode_losses = 0
+        total_reward = 0
+        
         for step in range(max_steps):
-            
+            if i > (cnt * max_episodes / 10):
+                eps -= 0.1
+                cnt += 1
             done = False
             act = agent.act(ob, eps)
-            #act = noise.get_action(act, step)
+            act = noise.get_action(act, step)
             act2 = [0,0.,0,0]
 
             # if two players only add noise to first 4 action elements
