@@ -7,17 +7,6 @@ import sys
 def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False, name='test'):
 
     ob = env.reset()
-    """ if player2:
-        # manually make action dim = 8 (otherwise only 4 for one player)
-        noise = OUNoise(action_dim= 2 * env.action_space.shape[0], 
-                        action_low=np.tile(env.action_space.low, 2), 
-                        action_high=np.tile(env.action_space.high, 2),
-                        max_sigma=0.6, min_sigma=0.2)
-    else:
-        noise = OUNoise(action_dim=env.action_space.shape[0], 
-                        action_low=env.action_space.low, 
-                        action_high=env.action_space.high,
-                        max_sigma=0.6, min_sigma=0.2) """
     
     noise = OUNoise(action_dim=env.num_actions, 
                         action_low=env.action_space.low[:4], 
@@ -39,13 +28,10 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
         ob2 = env.reset()
         episode_losses = 0
         total_reward = 0
-        
+
         for step in range(max_steps):
-            if i > (cnt * max_episodes / 10):
-                eps -= 0.1
-                cnt += 1
             done = False
-            act = agent.act(ob, eps)
+            act = agent.act(ob, eps=0)
             act = noise.get_action(act, step)
             act2 = [0,0.,0,0]
 
@@ -55,6 +41,8 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
 
             (ob_new, reward, done, _info) = env.step(np.hstack([act,act2]))
             reward = reward + _info["winner"] + _info["reward_closeness_to_puck"] + _info["reward_touch_puck"] + _info["reward_puck_direction"]
+            + _info["reward_puck_before"]
+
             total_reward += reward
             agent.store_transition((ob, act, reward, ob_new, done))      
             
