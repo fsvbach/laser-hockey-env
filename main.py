@@ -20,7 +20,7 @@ mode=0
 
 
 env = h_env.HockeyEnv(mode=mode)
-player2 = h_env.BasicOpponent()
+player2 = h_env.BasicOpponent(weak=True)
 
 q_agent = agent.DQNAgent(env.observation_space, 
                          env.discrete_action_space,
@@ -32,10 +32,10 @@ ddpg = DDPGAgent(env,
                          critic_lr=1e-3,
                          update_rate=0.05,
                          discount=0.9, update_target_every=20,
-                         pretrained='DDPG/weights/ddpg-defense-eps-noise-trained-10000')
+                         pretrained='DDPG/weights/ddpg-attack-ounoise-5001')
 
 td3 = TD3(18, 4, 1.0, env)
-td3.load(filename='next')
+td3.load(filename='stronger')
 
 # losses, rewards = training.train(env,
 #                                  q_agent, 
@@ -44,7 +44,7 @@ td3.load(filename='next')
 #                                  max_episodes=50000)
 
 
-stats = gameplay(env, ddpg, player2=td3, N=5, show=True, analyze=False)
+stats = gameplay(env, td3, player2=ddpg, N=10, show=True, analyze=False)
 print(stats)
 
 env.close()
