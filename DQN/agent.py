@@ -62,12 +62,12 @@ class DQNAgent(object):
         self._action_n = action_space.n
         self._config = {
             "eps": 1,            # Epsilon in epsilon greedy policies                        
-            "discount": 0.99,
+            "discount": 0.5,
             "buffer_size": int(2e4),
             "batch_size": 128,
             "learning_rate": 0.00025, 
-            "update_rule": 100,
-            "multistep": 5,
+            "update_rule": 20,
+            "multistep": 3,
             "omega": 0.5,
             # add additional parameters here        
         }
@@ -100,7 +100,7 @@ class DQNAgent(object):
     def reduce_exploration(self, x): 
         if x < self._eps: 
             self._eps -= x
-        
+       
 
     def act(self, observation, eps=None):
         if eps is None:
@@ -128,6 +128,8 @@ class DQNAgent(object):
             self.transition = []
             
     def train(self, iter_fit=32):
+        if self.buffer.size is not self.buffer.max_size:
+            return []
         losses = []
         omega = self._config["omega"]
         k     = self._config["update_rule"]
