@@ -13,23 +13,25 @@ from laserhockey.gameplay import gameplay
 import matplotlib.pyplot as plt
 from DDPG import train as ddpg_train
 from DDPG.ddpg_agent import DDPGAgent
+from TD3.agent import TD3
 
 env = h_env.HockeyEnv()
 attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
 
-name='ddpg-normal-noise-noeps-basicweak-10000'
+name='ddpg-normal-noeps-noise-td3-40000'
 
-player2 = h_env.BasicOpponent(weak=False)
+td3 = TD3(18, 4, 1.0, env)
+td3.load(filename='stronger')
 
 ddpg_player = DDPGAgent(env,
                          actor_lr=1e-4,
                          critic_lr=1e-3,
                          update_rate=0.05,
-                         discount=0.9, update_target_every=20, pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
+                         discount=0.9, update_target_every=20)
 
-"""losses, rewards = ddpg_train.train(normal, ddpg_player, player2=player2, name=name, max_episodes=10000, show=False)
+losses, rewards = ddpg_train.train(normal, ddpg_player, player2=td3, name=name, max_episodes=40000, show=False)
 
 plt.plot(training.running_mean(losses,64))
 plt.savefig(f'Plots/{name}_losses')
@@ -39,11 +41,11 @@ plt.close()
 plt.plot(training.running_mean(rewards,64))
 plt.savefig(f'Plots/{name}_rewards')
 plt.show()
-plt.close() """
+plt.close()
   
 
 ##for i in range (20):
-stats = gameplay(normal, ddpg_player, player2=player2, N=100, show=True, analyze=False)
+stats = gameplay(normal, ddpg_player, player2=td3, N=100, show=False, analyze=False)
 print(stats)
 
 defense.close()
