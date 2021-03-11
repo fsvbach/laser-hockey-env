@@ -27,7 +27,7 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', s
             if i != 0:
                 q_agent.reduce_exploration(0.1)
                 q_agent._config['discount'] += 0.02
-                q_agent.save_weights(f'DQN/weights/{name}_{i}')
+                #q_agent.save_weights(f'DQN/weights/{name}_{i}')
             
             # create plots from losses and rewards till now
             rewards =  [r[1] for r in stats]
@@ -45,7 +45,6 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', s
             
         total_reward = 0
         ob = env.reset()
-        #obs2 = ob = env.reset(mode=i%3)
         for t in range(max_steps):
             done = False        
             ob2 = env.obs_agent_two()

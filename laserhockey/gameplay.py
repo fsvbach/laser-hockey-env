@@ -12,7 +12,7 @@ import time
 def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
     win_stats = np.zeros((N,3))
     max_len = 500
-    fps = 50
+    fps = 100
 
     for n in range(N):
         obs = env.reset()
