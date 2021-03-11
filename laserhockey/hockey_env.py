@@ -526,13 +526,13 @@ class HockeyEnv(gym.Env, EzPickle):
   def _get_info(self):
     # different proxy rewards:
     # Proxy reward/penalty for not being close to puck in the own half when puck is flying towards goal (not to opponent)
-    reward_closeness_to_puck = 0
-    if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] <= 0:
+    punishment_distance_puck = 0
+    if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] == 0:
       dist_to_puck = dist_positions(self.player1.position, self.puck.position)
       max_dist = 250. / SCALE
-      max_reward = -5.  # max (negative) reward through this proxy
+      max_reward = -1.  # max (negative) reward through this proxy
       factor = max_reward / (max_dist * self.max_timesteps / 2)
-      reward_closeness_to_puck += dist_to_puck * factor  # Proxy reward for being close to puck in the own half
+      punishment_distance_puck += dist_to_puck * factor  # Proxy reward for being close to puck in the own half
     
     # Proxy reward: touch puck
     reward_touch_puck = 0.
@@ -540,20 +540,20 @@ class HockeyEnv(gym.Env, EzPickle):
       reward_touch_puck = 1.
     
     #reward puck in sight
-    reward_puck_before = 0
+    punishment_positioning = 0
     if self.player1.position[0] > self.puck.position[0]:
-        reward_puck_before = 1
+        punishment_positioning = -1
 
     # puck is flying in the right direction
-    max_reward = 5.
+    max_reward = 1.
     factor = max_reward / (self.max_timesteps * MAX_PUCK_SPEED)
     reward_puck_direction = self.puck.linearVelocity[0] * factor  # Puck flies right is good and left not
 
     return {"winner": self.winner,
-            "reward_closeness_to_puck": reward_closeness_to_puck,
+            "punishment_distance_puck": punishment_distance_puck,
             "reward_touch_puck": reward_touch_puck,
             "reward_puck_direction": reward_puck_direction,
-            'reward_puck_before': reward_puck_before
+            'punishment_positioning': punishment_positioning
             }
 
   def set_state(self, state):
@@ -640,8 +640,7 @@ class HockeyEnv(gym.Env, EzPickle):
       self.done = True
 
     info = self._get_info()
-    reward = self._compute_reward() 
-    #+ info["reward_closeness_to_puck"] + info["reward_touch_puck"] + info["reward_puck_direction"]
+    reward = self._compute_reward()
     
 
     self.closest_to_goal_dist = min(self.closest_to_goal_dist,
