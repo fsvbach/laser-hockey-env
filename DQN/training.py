@@ -5,10 +5,10 @@ from laserhockey.gameplay import gameplay
 import laserhockey.hockey_env as h_env
 
 punishment_positioning = 1
-punishment_distance_puck = 100 
+punishment_distance_puck = 200 
 reward_puck_direction = 100
-reward_touch_puck = 5
-reward_winner = 30
+reward_touch_puck = 10
+reward_winner = 10
 fps=2
 
 
@@ -23,17 +23,26 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', s
     losses = []
     
     for i in range(max_episodes):
-        if i % (max_episodes/10) == 0 and i != 0: 
-            normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
-            q_agent.reduce_exploration(0.1)
-            q_agent._config['discount'] += 0.02
-            q_agent.save_weights(f'DQN/weights/{name}_{i}')
-            plt.plot(running_mean(losses,64))
+        if i % (max_episodes/10) == 0 and i!= 0: 
+            if i != 0:
+                q_agent.reduce_exploration(0.1)
+                q_agent._config['discount'] += 0.02
+                q_agent.save_weights(f'DQN/weights/{name}_{i}')
+            
+            # create plots from losses and rewards till now
+            rewards =  [r[1] for r in stats]
+            fig, axs = plt.subplots(2, 1, constrained_layout=True)
+            axs[0].set_title("rewards")
+            axs[1].set_title("losses")
+            axs[0].plot(running_mean(rewards, 64))
+            axs[1].plot(running_mean(losses, 64))
             plt.show()
-            print("current buffer size: ", q_agent.buffer.size)
+            
+            normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
             winrate = gameplay(normal, q_agent, player2=player2, N=10, show=True, analyze=False)
-            print("losses-ties-wins: ", winrate)
+            print("ties-wins-losses: ", winrate)
             normal.close()
+            
         total_reward = 0
         ob = env.reset()
         #obs2 = ob = env.reset(mode=i%3)
