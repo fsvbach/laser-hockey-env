@@ -22,13 +22,16 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
             a2 = [0,0.,0,0] 
             if player2:
                 a2 = player2.act(obs_agent2)
-            obs, r, d, info = env.step(np.hstack([a1,a2]))    
+            obs, r, d, _info = env.step(np.hstack([a1,a2]))    
             obs_agent2 = env.obs_agent_two()
             if show:
                 time.sleep(1/fps)
                 if analyze:
-                    time.sleep(10/fps)
-                    print(player1.Q.maxQ(obs))
+                    time.sleep(25/fps)
+                    print("punishment_positioning: ", _info["punishment_positioning"])
+                    print("punishment_distance_puck: ",100* _info["punishment_distance_puck"])
+                    print("reward_puck_direction: ", 100*_info["reward_puck_direction"])
+                    print("reward_touch_puck: ", _info["reward_touch_puck"])
                 env.render()
             if d: break
         
