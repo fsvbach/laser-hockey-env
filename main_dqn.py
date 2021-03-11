@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar  4 14:33:17 2021
+Created on Thu Mar 11 09:16:26 2021
 
-@author: fsvbach
+@author: johannes
 """
 
 from DQN import agent, training
@@ -22,24 +22,26 @@ normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
 load_weights = False
 store_weights = 'strong_basic_oppponent'
 
-player2 = h_env.BasicOpponent(weak=True)
+player2 = h_env.BasicOpponent(weak=False)
 
+q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = f'DQN/weights/{load_weights}')
 
-losses, rewards = training.train(normal, ddpg_player, player2=player2, name=name, max_episodes=10000, show=False)
+losses, rewards = training.train(normal, q_agent, player2=player2, name=store_weights, max_episodes=10000)
 
 plt.plot(training.running_mean(losses,64))
-plt.savefig(f'Plots/{name}_losses')
+plt.savefig(f'Plots/{store_weights}_losses')
 plt.show()
 plt.close()
 
 plt.plot(training.running_mean(rewards,64))
-plt.savefig(f'Plots/{name}_rewards')
+plt.savefig(f'Plots/{store_weights}_rewards')
 plt.show()
 plt.close() 
   
 
-##for i in range (20):
-stats = gameplay(normal, ddpg_player, player2=player2, N=100, show=True, analyze=False)
+stats = gameplay(normal, q_agent, player2=player2, N=100, show=True, analyze=False)
 print(stats)
 
 defense.close()
