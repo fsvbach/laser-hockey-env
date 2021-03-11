@@ -61,7 +61,7 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 1,            # Epsilon in epsilon greedy policies                        
+            "eps": 0.5,            # Epsilon in epsilon greedy policies                        
             "discount": 0.8,
             "buffer_size": int(1e5),
             "batch_size": 128,

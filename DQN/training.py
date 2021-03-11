@@ -17,7 +17,7 @@ def running_mean(x, N):
     return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 
-def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', show=False):
+def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='test', show=False):
     
     stats = []
     losses = []
@@ -25,7 +25,7 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', s
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0 and i!= 0: 
             if i != 0:
-                q_agent.reduce_exploration(0.1)
+                q_agent.reduce_exploration(0.1* q_agent._config['eps'])
                 q_agent._config['discount'] += 0.02
                 #q_agent.save_weights(f'DQN/weights/{name}_{i}')
             
@@ -46,13 +46,17 @@ def train(env, q_agent, player2, max_episodes=200, max_steps=300, name='test', s
         total_reward = 0
         ob = env.reset()
         for t in range(max_steps):
-            done = False        
-            ob2 = env.obs_agent_two()
             a1 = q_agent.act(ob)
-            a2 = [0,0.,0,0] 
-            if env.mode == 0:
-                a2 = player2.act(ob2)
-            (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
+            if player2:     
+                ob2 = env.obs_agent_two()
+                a2 = [0,0.,0,0] 
+                if env.mode == 0:
+                    a2 = player2.act(ob2)
+                (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
+            else:
+                #environment handles opponents action
+                env.step(a1)
+                
             reward *= reward_winner
             reward += punishment_positioning *_info["punishment_positioning"] + punishment_distance_puck*_info["punishment_distance_puck"] + reward_puck_direction*_info["reward_puck_direction"] + reward_touch_puck*_info["reward_touch_puck"]
             total_reward+= reward       
