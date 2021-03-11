@@ -530,7 +530,7 @@ class HockeyEnv(gym.Env, EzPickle):
     if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] <= 0:
       dist_to_puck = dist_positions(self.player1.position, self.puck.position)
       max_dist = 250. / SCALE
-      max_reward = -5.  # max (negative) reward through this proxy
+      max_reward = -2.  # max (negative) reward through this proxy
       factor = max_reward / (max_dist * self.max_timesteps / 2)
       reward_closeness_to_puck += dist_to_puck * factor  # Proxy reward for being close to puck in the own half
     
@@ -545,7 +545,7 @@ class HockeyEnv(gym.Env, EzPickle):
         reward_puck_before = 1
 
     # puck is flying in the right direction
-    max_reward = 5.
+    max_reward = 2.
     factor = max_reward / (self.max_timesteps * MAX_PUCK_SPEED)
     reward_puck_direction = self.puck.linearVelocity[0] * factor  # Puck flies right is good and left not
 
@@ -553,7 +553,7 @@ class HockeyEnv(gym.Env, EzPickle):
             "reward_closeness_to_puck": reward_closeness_to_puck,
             "reward_touch_puck": reward_touch_puck,
             "reward_puck_direction": reward_puck_direction,
-            'reward_puck_before': reward_puck_before
+            'reward_puck_before':  0# reward_puck_before
             }
 
   def set_state(self, state):
