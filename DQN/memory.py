@@ -12,6 +12,17 @@ class Memory():
         self.current_idx = 0
         self.max_size=max_size
         self.normalization_constant=0
+        
+    def copy(self):
+        copy = Memory()
+        copy.transitions=self.transitions.copy()
+        copy.size = self.size
+        copy.current_idx = self.current_idx
+        copy.max_size = self.max_size
+        copy.max_priority = self.max_priority
+        copy.normalization_constant = self.normalization_constant
+        copy.size = self.size
+        return copy
 
     def add_transition(self, new_transition):
         
@@ -25,7 +36,6 @@ class Memory():
         self.transitions[self.current_idx,:] = np.asarray(new_transition, dtype=object)
         self.size = min(self.size + 1, self.max_size)
         self.current_idx = (self.current_idx + 1) % self.max_size
-        #print("normalization constant, priorities: ", self.normalization_constant, ", ", self.transitions[:self.size, 5])
         
     def update_priorities (self, indices, td_errors):
         old_priorities = np.sum(self.transitions[indices, 5])

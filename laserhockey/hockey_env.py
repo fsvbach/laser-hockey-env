@@ -518,7 +518,7 @@ class HockeyEnv(gym.Env, EzPickle):
       if self.winner == 0:  # tie
         r += 0
       elif self.winner == 1:  # you won
-        r += 10
+        r += 15
       else:  # opponent won
         r -= 10
     return r
@@ -545,8 +545,8 @@ class HockeyEnv(gym.Env, EzPickle):
     # Proxy reward: touch puck
     reward_touch_puck = 0.
     if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
-      reward_touch_puck = 1.
-    if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
+      reward_touch_puck = 1.5
+    if self.player2_has_puck == MAX_TIME_KEEP_PUCK:
       reward_touch_puck = -1.
       
     #reward puck in sight
@@ -556,7 +556,7 @@ class HockeyEnv(gym.Env, EzPickle):
     if self.player2.position[0] < self.puck.position[0]: 
         punishment_positioning += 1
 
-    # reward correct for puck direction and high velocity
+    # reward for correct puck direction and high velocity
     max_reward = 1.
     factor = max_reward / (self.max_timesteps * MAX_PUCK_SPEED)
     reward_puck_direction = self.puck.linearVelocity[0] * factor  

@@ -4,11 +4,7 @@ import matplotlib.pyplot as plt
 from laserhockey.gameplay import gameplay
 import laserhockey.hockey_env as h_env
 
-punishment_positioning = 1
-punishment_distance_puck = 200 
-reward_puck_direction = 100
-reward_touch_puck = 10
-reward_winner = 10
+
 fps=2
 
 
@@ -16,18 +12,60 @@ def running_mean(x, N):
     cumsum = np.cumsum(np.insert(x, 0, 0)) 
     return (cumsum[N:] - cumsum[:-N]) / float(N)
 
+def train_gen_opt(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='test', show=False):
+    reward_winner = q_agent._config["winner"]
+    punishment_positioning = q_agent._config["positioning"]
+    punishment_distance_puck = q_agent._config["distance_puck"]
+    reward_puck_direction = q_agent._config["puck_direction"]
+    reward_touch_puck = q_agent._config["touch_puck"]
+
+    
+    for i in range(max_episodes):
+        ob = env.reset()
+        for t in range(max_steps):
+            a1 = q_agent.act(ob)
+            (ob_new, reward, done, _info) = (None, None, None, None)
+            if player2:     
+                ob2 = env.obs_agent_two()
+                a2 = [0,0.,0,0] 
+                if env.mode == 0:
+                    a2 = player2.act(ob2)
+                (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
+            else:
+                #environment handles opponents action
+                (ob_new, reward, done, _info) = env.step(a1)
+                
+            reward *= reward_winner
+            reward += punishment_positioning *_info["punishment_positioning"] + punishment_distance_puck*_info["punishment_distance_puck"] + reward_puck_direction*_info["reward_puck_direction"] + reward_touch_puck*_info["reward_touch_puck"]   
+            q_agent.store_transition([ob, reward, ob_new, done])  
+            if show:
+                time.sleep(1.0/fps)
+            if done: 
+                break    
+            ob=ob_new  
+            
+        q_agent.train(32)
+        
+        
 
 def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='test', show=False):
     
     stats = []
     losses = []
     
+    reward_winner = q_agent._config["winner"]
+    punishment_positioning = q_agent._config["positioning"]
+    punishment_distance_puck = q_agent._config["distance_puck"]
+    reward_puck_direction = q_agent._config["puck_direction"]
+    reward_touch_puck = q_agent._config["touch_puck"]
+
+    
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0: 
             if i != 0:
                 q_agent.reduce_exploration(0.1* q_agent._config['eps'])
-                #q_agent._config['discount'] += 0.02
-                #q_agent.save_weights(f'DQN/weights/{name}_{i}')
+                q_agent._config['discount'] += 0.01
+                q_agent.save_weights(f'DQN/weights/{name}_{i}')
             
             # create plots from losses and rewards till now
             rewards =  [r[1] for r in stats]
