@@ -23,10 +23,10 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
     losses = []
     
     for i in range(max_episodes):
-        if i % (max_episodes/10) == 0 and i!= 0: 
+        if i % (max_episodes/10) == 0: 
             if i != 0:
                 q_agent.reduce_exploration(0.1* q_agent._config['eps'])
-                q_agent._config['discount'] += 0.02
+                #q_agent._config['discount'] += 0.02
                 #q_agent.save_weights(f'DQN/weights/{name}_{i}')
             
             # create plots from losses and rewards till now
@@ -39,7 +39,9 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
             plt.show()
             
             normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
-            winrate = gameplay(normal, q_agent, player2=player2, N=10, show=True, analyze=False)
+            if not player2: 
+                player2 = env.opponent
+            winrate = gameplay(normal, q_agent, player2, N=10, show=True, analyze=False)
             print("ties-wins-losses: ", winrate)
             normal.close()
             
@@ -47,6 +49,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
         ob = env.reset()
         for t in range(max_steps):
             a1 = q_agent.act(ob)
+            (ob_new, reward, done, _info) = (None, None, None, None)
             if player2:     
                 ob2 = env.obs_agent_two()
                 a2 = [0,0.,0,0] 
@@ -55,7 +58,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
                 (ob_new, reward, done, _info) = env.step(np.hstack([a1,a2]))
             else:
                 #environment handles opponents action
-                env.step(a1)
+                (ob_new, reward, done, _info) = env.step(a1)
                 
             reward *= reward_winner
             reward += punishment_positioning *_info["punishment_positioning"] + punishment_distance_puck*_info["punishment_distance_puck"] + reward_puck_direction*_info["reward_puck_direction"] + reward_touch_puck*_info["reward_touch_puck"]
