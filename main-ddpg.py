@@ -22,7 +22,11 @@ attack = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_SHOOTING)
 defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
 
+<<<<<<< HEAD
 weak = h_env.BasicOpponent(weak=True)
+=======
+name='ddpg-normal-noeps-noise-td3-40000'
+>>>>>>> e64a6d6304e9581511144cbf57973a67a84769ee
 
 strong = h_env.BasicOpponent(weak=False)
 
@@ -44,6 +48,7 @@ ddpg_trained= DDPGAgent(env,
                          update_rate=0.05,
                          discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-eps-noise-basic-35000")
 
+<<<<<<< HEAD
 
 ddpg_player = DDPGAgent(env,
                          actor_lr=1e-4,
@@ -55,6 +60,10 @@ ddpg_player = DDPGAgent(env,
 name="ddpg-noise-eps-normal-strong-ddpg35000-random-30000"
 losses, rewards = ddpg_train.train(normal, ddpg_player, player2=[strong, ddpg_trained], name=name, max_episodes=30000, show=False, reward_weights=[5, 0.5, 2, 0.5, 4])
 
+=======
+losses, rewards = ddpg_train.train(normal, ddpg_player, player2=td3, name=name, max_episodes=40000, show=False)
+
+>>>>>>> e64a6d6304e9581511144cbf57973a67a84769ee
 
 plt.plot(training.running_mean(losses,64))
 plt.savefig(f'Plots/{name}_losses')
@@ -64,7 +73,10 @@ plt.close()
 plt.plot(training.running_mean(rewards,64))
 plt.savefig(f'Plots/{name}_rewards')
 plt.show()
+<<<<<<< HEAD
 plt.close()
+=======
+>>>>>>> e64a6d6304e9581511144cbf57973a67a84769ee
 
   
 

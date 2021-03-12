@@ -12,7 +12,7 @@ import time
 def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
     win_stats = np.zeros((N,3))
     max_len = 500
-    fps = 50
+    fps = 100
 
     for n in range(N):
         obs = env.reset()
@@ -31,7 +31,7 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
                     print("punishment_positioning: ", _info["punishment_positioning"])
                     print("punishment_distance_puck: ",100* _info["punishment_distance_puck"])
                     print("reward_puck_direction: ", 100*_info["reward_puck_direction"])
-                    print("reward_touch_puck: ", _info["reward_touch_puck"])
+                    print("reward_touch_puck: ", 5*_info["reward_touch_puck"])
                 env.render()
             if d: break
         
