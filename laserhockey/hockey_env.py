@@ -527,7 +527,7 @@ class HockeyEnv(gym.Env, EzPickle):
     # different proxy rewards:
     # Proxy reward/penalty for not being close to puck in the own half when puck is flying towards goal (not to opponent)
     punishment_distance_puck = 0
-    if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] == 0:
+    if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] <= 0:
       dist_to_puck = dist_positions(self.player1.position, self.puck.position)
       max_dist = 250. / SCALE
       max_reward = -1.  # max (negative) reward through this proxy
@@ -538,8 +538,7 @@ class HockeyEnv(gym.Env, EzPickle):
     reward_touch_puck = 0.
     if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
       reward_touch_puck = 1.
-    if self.player2_has_puck == MAX_TIME_KEEP_PUCK:
-      reward_touch_puck = -1.
+      
     #reward puck in sight
     punishment_positioning = 0
     if self.player1.position[0] > self.puck.position[0]:
