@@ -35,6 +35,7 @@ class DDPGAgent(object):
         self.buffer = Memory(max_size=self._config["buffer_size"])
         self.update_rate = self._config["update_rate"]
         self.hidden_size = self._config["hidden_size"]
+        self.discount = self._config["discount"]
 
         self.actor         = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["actor_lr"])
         self.actor_target  = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
@@ -115,7 +116,7 @@ class DDPGAgent(object):
             s_prime = torch.FloatTensor(s_prime)
             rew = torch.FloatTensor(rew)
 
-            gamma=self._config['discount']
+            gamma=self.discount
             q = self.critic.forward(s, a)
             a_prime = self.actor_target.forward(s_prime)
             next_q = self.critic_target.forward(s_prime, a_prime.detach())
