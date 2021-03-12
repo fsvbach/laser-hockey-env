@@ -32,6 +32,13 @@ ddpg    = DDPGAgent(env,
                          discount=0.9, update_target_every=20,
                          pretrained='DDPG/weights/ddpg-attack-ounoise-5001')
 
+ddpg    = DDPGAgent(env,
+                         actor_lr=1e-4,
+                         critic_lr=1e-3,
+                         update_rate=0.05,
+                         discount=0.9, update_target_every=20,
+                         pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
+
 td3     = TD3(env.observation_space.shape[0],
               env.num_actions)
 td3.load('best_avg')
