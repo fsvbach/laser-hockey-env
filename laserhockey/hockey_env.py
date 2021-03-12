@@ -549,7 +549,6 @@ class HockeyEnv(gym.Env, EzPickle):
     if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
       reward_touch_puck = -1.
       
-      
     #reward puck in sight
     punishment_positioning = 0
     if self.player1.position[0] > self.puck.position[0]:
