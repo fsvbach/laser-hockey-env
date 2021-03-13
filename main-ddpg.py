@@ -41,19 +41,19 @@ td4.load('stronger')
 ddpg_trained= DDPGAgent(env,
                          actor_lr=1e-4,
                          critic_lr=1e-3,
-                         update_rate=0.05,
-                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-eps-noise-basic-35000")
+                         update_rate=0.02,
+                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-noise-eps-normal-strong-10000_5000")
 
 
 ddpg_player = DDPGAgent(env,
-                         actor_lr=1e-4,
-                         critic_lr=1e-3,
-                         update_rate=0.02,
+                         actor_lr=1e-5,
+                         critic_lr=1e-4,
+                         update_rate=0.01,
                          discount=0.9, update_target_every=20)
 
 
-name="ddpg-noise-eps-normal-strong-ddpg35000-random-30000"
-losses, rewards = ddpg_train.train(normal, ddpg_player, player2=[strong, ddpg_trained], name=name, max_episodes=30000, show=False, reward_weights=[5, 0.5, 2, 0.5, 4])
+""" name="ddpg-noise-eps-normal-strong-10000"
+losses, rewards = ddpg_train.train(normal, ddpg_player, player2=strong, name=name, max_episodes=10000, show=False, reward_weights=[20, 1, 10, 0, 2])
 
 
 plt.plot(training.running_mean(losses,64))
@@ -64,12 +64,12 @@ plt.close()
 plt.plot(training.running_mean(rewards,64))
 plt.savefig(f'Plots/{name}_rewards')
 plt.show()
-plt.close()
+plt.close() """
 
   
 
 for i in range (20):
-    stats = gameplay(normal, ddpg_trained, player2=strong, N=100, show=True, analyze=False)
+    stats = gameplay(normal, ddpg_trained, player2=strong, N=100, show=False, analyze=False)
     print(stats)
 
 defense.close()

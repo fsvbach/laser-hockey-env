@@ -30,7 +30,7 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
         total_reward = 0
 
         if (i > eps_cnt * max_episodes / 10):
-            eps -= 0.1
+            eps -= 0.2
             if (eps < 0):
                 eps = 0
             eps_cnt += 1
@@ -43,10 +43,19 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
 
             if player2:
                 # randomly select player
-                act2 = player2[np.random.randint(0,2)].act(ob2)
+                #act2 = player2[np.random.randint(0,2)].act(ob2)
+                act2 = player2.act(ob2)
 
             (ob_new, reward, done, _info) = env.step(np.hstack([act,act2]))
-            reward = reward + reward_weights[0] * _info["winner"] + reward_weights[1] * _info['punishment_distance_puck'] + reward_weights[2] * _info["reward_touch_puck"] + reward_weights[3] * _info["reward_puck_direction"]
+            # touch puck höher, muss trotzdem durch touch puck ausgleichbar sein
+            # positioning bisschen höher
+            # reward komplett rausnehmen? (winner höher skalieren)
+            # reward puck direction raus
+            # tore schießen höher als tor bekommen
+            # reward rausgenommen
+            #reward = reward + reward_weights[0] * _info["winner"] + reward_weights[1] * _info['punishment_distance_puck'] + reward_weights[2] * _info["reward_touch_puck"] + reward_weights[3] * _info["reward_puck_direction"]
+            #+ reward_weights[4] * _info['punishment_positioning']
+            reward = reward_weights[0] * _info["winner"] + reward_weights[1] * _info['punishment_distance_puck'] + reward_weights[2] * _info["reward_touch_puck"] + reward_weights[3] * _info["reward_puck_direction"]
             + reward_weights[4] * _info['punishment_positioning']
 
             total_reward += reward
