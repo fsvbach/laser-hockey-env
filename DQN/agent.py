@@ -62,17 +62,17 @@ class DQNAgent(object):
         self._action_n = action_space.n
         self._config = {
             "eps": 1,                               
-            "discount": 0.85,
+            "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
             "learning_rate": 0.00025, 
             "update_rule": 20,
-            "multistep": 3,
-            "omega": 0.5,
+            "multistep": 5,
+            "omega": 1,
             "winner": 10,
             "positioning": 1,
-            "distance_puck": 100,
-            "puck_direction": 50,
+            "distance_puck": 150,
+            "puck_direction": 75,
             "touch_puck": 10
         }
         if userconfig: 

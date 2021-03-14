@@ -8,7 +8,10 @@ Created on Sat Feb 27 13:33:27 2021
 
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 from laserhockey.TrainingHall import TrainingHall
+import laserhockey.hockey_env as h_env
+
 
 def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
     win_stats = np.zeros((N,3))
@@ -41,4 +44,52 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
         
         win_stats[n, env._get_info()['winner']] = 1
     return np.sum(win_stats, axis = 0)
+
+
+
+"ties-wins-losses"
+class Tournament: 
+    
+    def __init__(self, env, agents): 
+        self.agents = agents
+        self.env = env
+        # results contains the results for the basic metric and the football metric in two matrices
+        self.results = np.empty((2, len(agents, len(agents))))
+        
+    def run(self, rounds=100): 
+        for i, player1 in enumerate(self.agents): 
+            for j, player2 in enumerate(self.agents): 
+                if player1 is player2: 
+                    continue
+                stats = gameplay(self.env, player1, player2, rounds)
+                # results based on the basic metric
+                self.results[0][i][j] = stats[1] - stats[2]
+                self.results[0][j][i] = stats[2] - stats[1]
+                # results based on the soccer metric
+                self.results[1][i][j] = stats[0] + 3*stats[1]
+                self.results[1][j][i] = stats[0] + 3*stats[2]
+    
+    def show_results(self): 
+        fig, axs = plt.subplots(2, 1, constrained_layout=True)
+        axs[0].set_title("basic metric")
+        axs[1].set_title("soccer metric")
+        axs[0].imshow(self.results[0], cmap='hot', interpolation='nearest')
+        axs[1].imshow(self.results[1], cmap='hot', interpolation='nearest')
+        plt.show()
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
 
