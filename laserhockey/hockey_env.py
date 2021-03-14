@@ -506,8 +506,8 @@ class HockeyEnv(gym.Env, EzPickle):
                       -self.player1.linearVelocity,
                       [self.player1.angularVelocity],
                       -(self.puck.position - [CENTER_X, CENTER_Y]),
-                      -self.puck.linearVelocity
-                    ] + ([] if not self.keep_mode else [self.player2_has_puck, self.player1_has_puck]))
+                      -self.puck.linearVelocity] 
+                    + ([] if not self.keep_mode else [self.player2_has_puck, self.player1_has_puck]))
 
     return obs
 
