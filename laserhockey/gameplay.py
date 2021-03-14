@@ -64,9 +64,19 @@ class Tournament:
         self.total_scores = np.zeros((n,3))
         
     def run(self, rounds=100): 
+        show = False
         for i, player1 in enumerate(self.agents): 
             for j, player2 in enumerate(self.agents): 
-                stats = gameplay(self.env, player1, player2, rounds, show=False)
+                if i == j:
+                    # results based on the basic metric
+                    self.results_basic[i][j] = None
+                    self.results_basic[j][i] = None
+                    # results based on the soccer metric
+                    self.results_soccer[i][j] = None
+                    self.results_soccer[j][i] = None
+                    continue
+                show = player1.name() =="DQN"
+                stats = gameplay(self.env, player1, player2, rounds, show=show)
                 self.results[i][j] = (stats[0], stats[1], stats[2])
                 self.results[j][i] = (stats[0], stats[2], stats[1])
                 
@@ -76,14 +86,7 @@ class Tournament:
                     self.total_scores[i][k] += stats[k]
                     self.total_scores[j][k] += stats[k]
                 
-                if i == j:
-                    # results based on the basic metric
-                    self.results_basic[i][j] = None
-                    self.results_basic[j][i] = None
-                    # results based on the soccer metric
-                    self.results_soccer[i][j] = None
-                    self.results_soccer[j][i] = None
-                    continue
+                
                 # results based on the basic metric
                 self.results_basic[i][j] = (stats[1] - stats[2])/rounds
                 self.results_basic[j][i] = (stats[2] - stats[1])/rounds
