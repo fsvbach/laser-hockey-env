@@ -30,13 +30,9 @@ ddpg = DDPGAgent(env,
                 discount=0.9, update_target_every=20,
                 pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
 
-td3 = TD3(18, 4, 1.0)
-td3.load(filename='best_avg')
+td3 = TD3(pretrained='stronger')
 
-current = TD3(18, 4, 1.0)
-current.load(filename='stronger')
-
-stats = gameplay(env, ddpg, player2=basic, N=2, show=True, analyze=True)
+stats = gameplay(env, td3, player2=basic, N=10, show=True, analyze=False)
 print(stats)
 
 env.close()
