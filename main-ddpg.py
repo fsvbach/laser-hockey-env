@@ -26,9 +26,9 @@ weak = h_env.BasicOpponent(weak=True)
 
 strong = h_env.BasicOpponent(weak=False)
 
-td4     = TD3(env.observation_space.shape[0],
-              env.num_actions)
-td4.load('stronger')
+#td4     = TD3(env.observation_space,
+ #             env.num_actions)
+#td4.load('stronger')
 
 # best runs
 # win to strong:
@@ -36,13 +36,14 @@ td4.load('stronger')
 # lose to strong:
 # ddpg-normal-noeps-noise-td3-40000
 # ddpg-attack-ounoise-5001
+# ddpg-normal-eps-noise-10000
 
 
 ddpg_trained= DDPGAgent(env,
                          actor_lr=1e-4,
                          critic_lr=1e-3,
                          update_rate=0.02,
-                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-noise-eps-normal-strong-10000_5000")
+                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-eps-noise-basic-35000")
 
 
 ddpg_player = DDPGAgent(env,
@@ -69,7 +70,7 @@ plt.close() """
   
 
 for i in range (20):
-    stats = gameplay(normal, ddpg_trained, player2=strong, N=100, show=False, analyze=False)
+    stats = gameplay(normal, ddpg_trained, player2=strong, N=20, show=True, analyze=False)
     print(stats)
 
 defense.close()

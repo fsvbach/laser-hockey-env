@@ -17,11 +17,13 @@ class DDPGAgent(object):
 
         self.env = env
         self._observation_space = env.observation_space
+        self.action_dim = env.action_space.shape[0]
+        # uncomment for pendulum env
+        #self.obs_dim = self._observation_space.shape[0]
         self.action_dim = env.num_actions
-        self.obs_dim = self._observation_space.shape[0]
 
         self._config = {
-            "discount": 0.99,
+            "discount": 0.9,
             "hidden_size": 256,
             "buffer_size": int(1e5), 
             "batch_size": 128,
@@ -41,6 +43,7 @@ class DDPGAgent(object):
         self.actor_target  = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
         self.critic        = Critic(input_size=self.obs_dim + self.action_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["critic_lr"])
         self.critic_target = Critic(input_size=self.obs_dim + self.action_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
+        
         # copy params into target nets for initialization
         for target_param, param in zip(self.actor_target.parameters(), self.actor.parameters()):
             target_param.data.copy_(param.data)
@@ -57,6 +60,7 @@ class DDPGAgent(object):
         
         self.train_iter = 0
 
+        # load pretrained model
         if pretrained:
             try:
                 self.load_weights(pretrained)
@@ -96,8 +100,6 @@ class DDPGAgent(object):
         else:
             return self.env.action_space.sample()[:self.action_dim]
         
-
-
 
     def train(self, iter_fit=32):
         losses = []
@@ -144,7 +146,9 @@ class DDPGAgent(object):
 
 
 
-
+"""
+This part was taken from https://github.com/vitchyr/rlkit/blob/master/rlkit/exploration_strategies/ou_strategy.py
+"""
 class OUNoise(object):
     def __init__(self, action_dim, action_low, action_high, mu=0.0, theta=0.15, max_sigma=0.3, min_sigma=0.3, decay_period=100000):
         self.mu           = mu
