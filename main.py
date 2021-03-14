@@ -6,7 +6,7 @@ Created on Thu Mar  4 14:33:17 2021
 @author: fsvbach
 """
 
-from laserhockey.hockey_env import HockeyEnv, BasicOpponent
+from laserhockey.hockey_env import HockeyEnv, BasicOpponent, StupidOpponent
 from laserhockey.gameplay import gameplay
 from DQN import agent
 from DDPG.ddpg_agent import DDPGAgent
@@ -14,25 +14,25 @@ from TD3.agent import TD3
 
 env = HockeyEnv()
 
-player2 = BasicOpponent(weak=False)
+stupid = StupidOpponent()
+basic = BasicOpponent(weak=False)
+weak = BasicOpponent(weak=True)
 
-q_agent = agent.DQNAgent(env.observation_space, 
+dqn = agent.DQNAgent(env.observation_space, 
                          env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
-                        pretrained   = 'DQN/weights/attack')
+                        pretrained   = 'DQN/weights/training_hall_1')
 
 ddpg = DDPGAgent(env,
                 actor_lr=1e-4,
                 critic_lr=1e-3,
                 update_rate=0.05,
                 discount=0.9, update_target_every=20,
-                pretrained='DDPG/weights/ddpg-attack-ounoise-5001')
+                pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
 
-td3 = TD3(18, 4, 1.0, env)
-td3.load(filename='stronger')
+td3 = TD3(pretrained='stronger')
 
-
-stats = gameplay(env, td3, player2=q_agent, N=10, show=True, analyze=False)
+stats = gameplay(env, td3, player2=basic, N=10, show=True, analyze=False)
 print(stats)
 
 env.close()
