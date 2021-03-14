@@ -701,6 +701,13 @@ class BasicOpponent():
     self.weak = weak
     self.keep_mode = keep_mode
     self.phase = np.random.uniform(0, np.pi)
+  
+    
+  def name(self): 
+      if self.weak: 
+          return "Weak Basic Opponent"
+      else: 
+          return "Strong Basic Opponent"
 
   def act(self, obs, eps=None, verbose=False):
     alpha = obs[2]
@@ -749,6 +756,7 @@ class BasicOpponent():
       return np.hstack([action, [shoot]])
     else:
       return action
+  
 
 
 class HumanOpponent():
@@ -812,12 +820,7 @@ class HockeyEnv_BasicOpponent(HockeyEnv):
     action2 = np.hstack([action, a2])
     return super().step(action2)
 
-  def name(self): 
-      if self.weak: 
-          return "Weak Basic Opponent"
-      else: 
-          return "Strong Basic Opponent"
-
+ 
 
 from gym.envs.registration import register
 

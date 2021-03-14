@@ -62,7 +62,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
 
 agents = [weak_basic_opponent, strong_basic_opponent, q_agent2, td3, ddpg2]
 tournament = Tournament(env, agents)
-tournament.run(10)
+tournament.run(5)
 tournament.show_results()
 
 
