@@ -518,9 +518,9 @@ class HockeyEnv(gym.Env, EzPickle):
       if self.winner == 0:  # tie
         r += 0
       elif self.winner == 1:  # you won
-        r += 10
+        r += 100
       else:  # opponent won
-        r -= 10
+        r -= 0
     return r
 
   def _get_info(self):
@@ -531,40 +531,40 @@ class HockeyEnv(gym.Env, EzPickle):
     if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] <= 0:
       dist_to_puck = dist_positions(self.player1.position, self.puck.position)
       max_dist = 250. / SCALE
-      max_reward = -1.  
+      max_reward = -10.  
       factor = max_reward / (max_dist * self.max_timesteps / 2)
       punishment_distance_puck += dist_to_puck * factor 
-    if self.puck.position[0] >= CENTER_X and self.puck.linearVelocity[0] >= 0: 
-      dist_to_puck = dist_positions(self.player2.position, self.puck.position)
-      max_dist = 250. / SCALE
-      max_reward = 1.  
-      factor = max_reward / (max_dist * self.max_timesteps / 2)
-      punishment_distance_puck += dist_to_puck * factor 
+    # if self.puck.position[0] >= CENTER_X and self.puck.linearVelocity[0] >= 0: 
+    #   dist_to_puck = dist_positions(self.player2.position, self.puck.position)
+    #   max_dist = 250. / SCALE
+    #   max_reward = 1.  
+    #   factor = max_reward / (max_dist * self.max_timesteps / 2)
+    #   punishment_distance_puck += dist_to_puck * factor 
     
     
     # Proxy reward: touch puck
     reward_touch_puck = 0.
     if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
-      reward_touch_puck = 1.
-    if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
-      reward_touch_puck = -1.
+      reward_touch_puck = 5
+    # if self.player2_has_puck == MAX_TIME_KEEP_PUCK:
+    #   reward_touch_puck = -1.
       
     #reward puck in sight
     punishment_positioning = 0
-    if self.player1.position[0] > self.puck.position[0]:
-        punishment_positioning -= 1
+    # if self.player1.position[0] > self.puck.position[0]:
+    #     punishment_positioning -= 0.20
     if self.player2.position[0] < self.puck.position[0]: 
-        punishment_positioning += 1
+        punishment_positioning += 0.20
 
     # reward correct for puck direction and high velocity
-    max_reward = 1.
+    max_reward = 100.
     factor = max_reward / (self.max_timesteps * MAX_PUCK_SPEED)
     reward_puck_direction = self.puck.linearVelocity[0] * factor  
 
     return {"winner": self.winner,
             "punishment_distance_puck": punishment_distance_puck,
             "reward_touch_puck": reward_touch_puck,
-            "reward_puck_direction": reward_puck_direction,
+            "reward_puck_direction": max(reward_puck_direction,0),
             'punishment_positioning': punishment_positioning
             }
 
@@ -696,13 +696,21 @@ class HockeyEnv(gym.Env, EzPickle):
       self.viewer = None
 
 
+class StupidOpponent():
+  def __init__(self):
+    self.name='stupid'
+
+  def act(self, obs, eps=0):
+    return [0.0,0.0,0.0,0.0]
+    
+    
 class BasicOpponent():
   def __init__(self, weak=True, keep_mode=True):
     self.weak = weak
     self.keep_mode = keep_mode
     self.phase = np.random.uniform(0, np.pi)
 
-  def act(self, obs, verbose=False):
+  def act(self, obs, eps=0, verbose=False):
     alpha = obs[2]
     p1 = np.asarray([obs[0], obs[1], alpha])
     v1 = np.asarray(obs[3:6])
