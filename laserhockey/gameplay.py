@@ -64,9 +64,8 @@ class Tournament:
         for i, player1 in enumerate(self.agents): 
             for j, player2 in enumerate(self.agents): 
                 if i==j: 
-                    print("same agent reached")
                     continue
-                stats = gameplay(self.env, player1, player2, rounds, show=True)
+                stats = gameplay(self.env, player1, player2, rounds, show=False)
                 # results based on the basic metric
                 self.results[0][i][j] = stats[1] - stats[2]
                 self.results[0][j][i] = stats[2] - stats[1]
@@ -78,9 +77,16 @@ class Tournament:
         fig, axs = plt.subplots(2, 1, constrained_layout=True)
         axs[0].set_title("basic metric")
         axs[1].set_title("soccer metric")
-        axs[0].imshow(self.results[0], cmap='coolwarm', interpolation='nearest')
+        
+        labels = [a.name() for a in self.agents]
+        axs[0].set_xticklabels(labels, minor=False)
+        axs[0].set_yticklabels(labels, minor=False)
+        axs[1].set_xticklabels(labels, minor=False)
+        axs[1].set_yticklabels(labels, minor=False)
+        
+        im =axs[0].imshow(self.results[0], cmap='coolwarm', interpolation='nearest')
         axs[1].imshow(self.results[1], cmap='coolwarm', interpolation='nearest')
-        plt.colormap()
+        plt.colorbar(mappable=im, ax=axs)
         plt.show()
 
 
