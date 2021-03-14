@@ -29,9 +29,9 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 env = h_env.HockeyEnv()
 load_weights = 'td3_agent:50000_10_1_150_75_10'
 
-td3 = TD3(18,4,1.0)
-td3.load('stronger')
 
+
+td3 = TD3(pretrained='stronger')
 
 strong_basic_opponent = h_env.BasicOpponent(weak=False)
 weak_basic_opponent = h_env.BasicOpponent(weak=True) 
