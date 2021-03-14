@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 runs/*
+TD3.ipynb
 
 # C extensions
 *.so

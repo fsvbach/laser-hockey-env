@@ -11,10 +11,11 @@ import time
 import matplotlib.pyplot as plt
 from laserhockey.TrainingHall import TrainingHall
 import laserhockey.hockey_env as h_env
+import pandas as pd
 
 
 def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
-    win_stats = np.zeros((N,3))
+    win_stats = np.zeros((N,3),dtype=np.int)
     max_len = 500
     fps = 100
     training_hall = isinstance(env, TrainingHall)
@@ -32,6 +33,7 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
                     a2 = player2.act(obs_agent2)
                 obs, r, done, _info = env.step(np.hstack([a1,a2]))    
                 obs_agent2 = env.obs_agent_two()
+                total_reward += sum(list(_info.values()))
             if show:
                 time.sleep(1/fps)
                 if analyze:
@@ -60,7 +62,7 @@ class Tournament:
         n = len(agents)
         self.results_basic = np.zeros((n, n))
         self.results_soccer = np.zeros((n, n))
-        self.total_scores = np.zeros((n,3))
+        self.total_scores = np.zeros((n,3), dtype=np.int)
         
     def run(self, rounds=100): 
         show = False
@@ -83,22 +85,26 @@ class Tournament:
                 self.results_soccer[j][i] += (stats[0] + 3*stats[2])/rounds /2
                 
                 #total scores summing
-                self.total_scores[i] += stats
-                stats[[1,2]]=stats[[2,1]]
-                self.total_scores[j] += stats
+                self.total_scores[i] += stats[[1,0,2]]
+                self.total_scores[j] += stats[[2,0,1]]
                 
         self.compute_scores()
 
     def compute_scores(self):
-        self.soccer_scores = np.nanmean(self.results_soccer, axis=1)
-        self.basic_scores = np.nanmean(self.results_basic, axis=1)
+        self.soccer_scores = np.round(np.nanmean(self.results_soccer, axis=1),3)
+        self.basic_scores =np.round( np.nanmean(self.results_basic, axis=1),3)
         
     def print_scores(self):
         print("\nTotal Ties-Wins-Losses:")
-        for i,a in enumerate(self.agents): 
-            print (a.name(), ": ", self.total_scores[i])
-        print("\nSoccer Scores: ", self.soccer_scores)
-        print("\nBasic Scores: ", self.basic_scores)
+        table = pd.DataFrame(self.total_scores, 
+                             index = [a.name() for a in self.agents],
+                             columns=['Wins','Ties','Losses'])
+        table['Soccer Score'] = self.soccer_scores
+        table['Basic Score'] = self.basic_scores
+        table = table.sort_values('Soccer Score', ascending=False)
+        table.to_csv('Plots/tournament_scores')
+        print(table)
+
     
     
     def show_results(self): 
@@ -117,6 +123,7 @@ class Tournament:
         soccer = axs[1].imshow(self.results_soccer, cmap='Greens', interpolation='nearest')
         plt.colorbar(mappable=basic, ax=axs[0])
         plt.colorbar(mappable=soccer, ax=axs[1])
+        plt.savefig('Plots/tournament_results.svg')
         plt.show()
 
 
