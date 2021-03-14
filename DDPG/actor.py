@@ -21,4 +21,4 @@ class Actor(nn.Module):
         x = F.relu(self.lin2(x))
         return torch.tanh(self.lin3(x))
         # uncomment for pendulum (scaling actions to [-2, 2] gives better results)
-        #return 2.0 * torch.tanh(self.lin3(x))
+        # return 2.0 * torch.tanh(self.lin3(x))

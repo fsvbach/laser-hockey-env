@@ -30,7 +30,7 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
         total_reward = 0
 
         if (i > eps_cnt * max_episodes / 10):
-            eps -= 0.2
+            eps -= 0.15
             if (eps < 0):
                 eps = 0
             eps_cnt += 1

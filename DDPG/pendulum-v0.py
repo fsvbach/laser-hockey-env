@@ -9,13 +9,17 @@ import time
 from ddpg_agent import DDPGAgent
 
 env = gym.make("Pendulum-v0")
+name = "ddpg-pendulum-v0"
 
-agent = DDPGAgent(env.observation_space, env.action_space)
-noise = OUNoise(env.action_space)
-batch_size = 128
+agent = DDPGAgent(env)
+noise = OUNoise(action_dim=env.action_space.shape[0], 
+                        action_low=env.action_space.low, 
+                        action_high=env.action_space.high,
+                        max_sigma=0.3, min_sigma=0.2)
 rewards = []
 avg_rewards = []
-max_episodes=100
+batch_size=128
+max_episodes=400
 max_steps=500
 show=False
 
@@ -47,10 +51,12 @@ for episode in range(max_episodes):
     rewards.append(episode_reward)
     avg_rewards.append(np.mean(rewards[-10:]))
 
+agent.save_weights(f'DDPG/weights/{name}')
+
 plt.plot(rewards)
 plt.plot(avg_rewards)
 plt.plot()
 plt.xlabel('Episode')
 plt.ylabel('Reward')
-plt.savefig(f'Plots/ddpg_pendulum-v0_rewards')
+plt.savefig(f'Plots/ddpg_pendulum-new_rewards')
 plt.show()
