@@ -62,18 +62,8 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
 
 agents = [weak_basic_opponent, strong_basic_opponent, q_agent2, td3, ddpg2]
 tournament = Tournament(env, agents)
-tournament.run(200)
+tournament.run(10)
 tournament.show_results()
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -83,51 +73,52 @@ tournament.show_results()
 # TRAINING HALL
 
 
+"""
+load_weights = 'td3_agent:50000_10_1_150_75_10'
+training_hall = TrainingHall()
 
-# load_weights = 'td3_agent:50000_10_1_150_75_10'
-# training_hall = TrainingHall()
+td3 = TD3(18,4,1.0)
+td3.load('stronger')
 
-# td3 = TD3(18,4,1.0)
-# td3.load('stronger')
+strong_basic_opponent = h_env.BasicOpponent(weak=False)
+weak_basic_opponent = h_env.BasicOpponent(weak=True)
+ddpg = DDPGAgent(training_hall,
+                          actor_lr=1e-4,
+                          critic_lr=1e-3,
+                          update_rate=0.05,
+                          discount=0.9, update_target_every=20,
+                          pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
 
-# strong_basic_opponent = h_env.BasicOpponent(weak=False)
-# weak_basic_opponent = h_env.BasicOpponent(weak=True)
-# ddpg = DDPGAgent(training_hall,
-#                          actor_lr=1e-4,
-#                          critic_lr=1e-3,
-#                          update_rate=0.05,
-#                          discount=0.9, update_target_every=20,
-#                          pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
-
-# ddpg2 = DDPGAgent(training_hall,
-#                          actor_lr=1e-4,
-#                          critic_lr=1e-3,
-#                          update_rate=0.05,
-#                          discount=0.9, update_target_every=20,
-#                          pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
-
-
-# q_agent2 = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
-#                         convert_func =  env.discrete_to_continous_action,
-#                         pretrained   = 'DQN/weights/training_hall_1')
+ddpg2 = DDPGAgent(training_hall,
+                          actor_lr=1e-4,
+                          critic_lr=1e-3,
+                          update_rate=0.05,
+                          discount=0.9, update_target_every=20,
+                          pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
 
 
-# q_agent = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
-#                         convert_func =  env.discrete_to_continous_action,
-#                         pretrained   = f'DQN/weights/{load_weights}')
+q_agent2 = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = 'DQN/weights/training_hall_1')
+
+
+q_agent = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = f'DQN/weights/{load_weights}')
 
 
 
-# training_hall.register_opponents([td3, ddpg2, basic_opponent])
+training_hall.register_opponents([td3, ddpg2, basic_opponent])
 
-# store_weights = f'training_hall:50000_omega=1{q_agent._config["winner"]}_{q_agent._config["positioning"]}_{q_agent._config["distance_puck"]}_{q_agent._config["puck_direction"]}_{q_agent._config["touch_puck"]}'
+store_weights = f'training_hall:50000_omega=1{q_agent._config["winner"]}_{q_agent._config["positioning"]}_{q_agent._config["distance_puck"]}_{q_agent._config["puck_direction"]}_{q_agent._config["touch_puck"]}'
 
-#losses, rewards = training.train(normal, q_agent, player2=basic_opponent, name=store_weights, show=False, max_episodes=10000)
-#losses, rewards = training.train(training_hall, q_agent, player2=td3, name=store_weights, show=False, max_episodes=50000)
+losses, rewards = training.train(normal, q_agent, player2=basic_opponent, name=store_weights, show=False, max_episodes=10000)
+losses, rewards = training.train(training_hall, q_agent, player2=td3, name=store_weights, show=False, max_episodes=50000)
 
-#stats = gameplay(training_hall, q_agent, player2=td3, N=50, show=True, analyze=False)
-#print("ties-wins-losses: ", stats)
-# training_hall.close()
+stats = gameplay(training_hall, q_agent, player2=td3, N=50, show=True, analyze=False)
+print("ties-wins-losses: ", stats)
+training_hall.close()
+"""
 
 
 
@@ -135,12 +126,12 @@ tournament.show_results()
 #########################################################################################################
 # GENETIC OPTIMIZATION
 
-#GeneticOptimization(10, 25, 100, env=training_hall).run()
-
+"""
+GeneticOptimization(10, 25, 100, env=training_hall).run()
+"""
 
 
 #########################################################################################################
 defense.close()
 attack.close()
-normal.close()
 env.close()

@@ -54,14 +54,16 @@ class Tournament:
         self.agents = agents
         self.env = env
         # results contains the results for the basic metric and the football metric in two matrices
-        self.results = np.empty((2, len(agents, len(agents))))
+        n = len(agents)
+        self.results = np.zeros((2, n, n))
         
     def run(self, rounds=100): 
         for i, player1 in enumerate(self.agents): 
             for j, player2 in enumerate(self.agents): 
-                if player1 is player2: 
+                if i==j: 
+                    print("same agent reached")
                     continue
-                stats = gameplay(self.env, player1, player2, rounds)
+                stats = gameplay(self.env, player1, player2, rounds, show=True)
                 # results based on the basic metric
                 self.results[0][i][j] = stats[1] - stats[2]
                 self.results[0][j][i] = stats[2] - stats[1]
@@ -73,8 +75,9 @@ class Tournament:
         fig, axs = plt.subplots(2, 1, constrained_layout=True)
         axs[0].set_title("basic metric")
         axs[1].set_title("soccer metric")
-        axs[0].imshow(self.results[0], cmap='hot', interpolation='nearest')
-        axs[1].imshow(self.results[1], cmap='hot', interpolation='nearest')
+        axs[0].imshow(self.results[0], cmap='coolwarm', interpolation='nearest')
+        axs[1].imshow(self.results[1], cmap='coolwarm', interpolation='nearest')
+        plt.colormap()
         plt.show()
 
 

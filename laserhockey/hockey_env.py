@@ -702,7 +702,7 @@ class BasicOpponent():
     self.keep_mode = keep_mode
     self.phase = np.random.uniform(0, np.pi)
 
-  def act(self, obs, verbose=False):
+  def act(self, obs, eps=None, verbose=False):
     alpha = obs[2]
     p1 = np.asarray([obs[0], obs[1], alpha])
     v1 = np.asarray(obs[3:6])
@@ -802,6 +802,7 @@ class HockeyEnv_BasicOpponent(HockeyEnv):
   def __init__(self, mode=HockeyEnv.NORMAL, weak_opponent=False):
     super().__init__(mode=mode, keep_mode=True)
     self.opponent = BasicOpponent(weak=weak_opponent)
+    self.weak = True
     # linear force in (x,y)-direction, torque, and shooting
     self.action_space = spaces.Box(-1, +1, (4,), dtype=np.float32)
 
@@ -810,6 +811,12 @@ class HockeyEnv_BasicOpponent(HockeyEnv):
     a2 = self.opponent.act(ob2)
     action2 = np.hstack([action, a2])
     return super().step(action2)
+
+  def name(self): 
+      if self.weak: 
+          return "Weak Basic Opponent"
+      else: 
+          return "Strong Basic Opponent"
 
 
 from gym.envs.registration import register

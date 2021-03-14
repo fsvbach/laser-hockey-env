@@ -80,7 +80,9 @@ class DDPGAgent(object):
         self.actor.eval()
         self.critic.load_state_dict(torch.load(filepath + "_critic"))
         self.critic.eval()
-
+    
+    def name(self):
+        return "DDPG Agent"
 
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
