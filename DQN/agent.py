@@ -61,17 +61,22 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.75,            # Epsilon in epsilon greedy policies                        
-            "discount": 0.9,
+            "eps": 1,                               
+            "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
             "learning_rate": 0.00025, 
-            "update_rule": 50,
-            "multistep": 3,
-            "omega": 0.5,
-            # add additional parameters here        
+            "update_rule": 20,
+            "multistep": 5,
+            "omega": 1,
+            "winner": 10,
+            "positioning": 1,
+            "distance_puck": 150,
+            "puck_direction": 75,
+            "touch_puck": 10
         }
-        self._config.update(userconfig)        
+        if userconfig: 
+            self._config.update(userconfig["userconfig"])        
         self.transition = []
         self._eps   = self._config["eps"]
         self.buffer = Memory(max_size=self._config["buffer_size"])
@@ -90,12 +95,17 @@ class DQNAgent(object):
     def _update_target_net(self):        
         self.T.load_state_dict(self.Q.state_dict())
         
+    def name(self): 
+        return "DQN Agent"
+    
     def save_weights(self, filepath):
         torch.save(self.Q.state_dict(), filepath)
     
     def load_weights(self, filepath):
         self.Q.eval()
         self.Q.load_state_dict(torch.load(filepath))
+        self.T.eval()
+        self.T.load_state_dict(torch.load(filepath))
         
     def reduce_exploration(self, x): 
         if x < self._eps: 

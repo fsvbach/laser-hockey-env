@@ -4,7 +4,7 @@ import torch
 from .ddpg_agent import OUNoise
 import sys
 
-def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False, name='test'):
+def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False, name='test', reward_weights=[3, 2, 1, 1, 2]):
 
     ob = env.reset()
     
@@ -20,7 +20,7 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
     fps=50
     show = False
     eps = 1
-    cnt = 1
+    eps_cnt = 1
 
     for i in range(max_episodes):
         noise.reset()
@@ -29,19 +29,34 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
         episode_losses = 0
         total_reward = 0
 
+        if (i > eps_cnt * max_episodes / 10):
+            eps -= 0.2
+            if (eps < 0):
+                eps = 0
+            eps_cnt += 1
+
         for step in range(max_steps):
             done = False
-            act = agent.act(ob, eps=0)
+            act = agent.act(ob, eps=eps)
             act = noise.get_action(act, step)
             act2 = [0,0.,0,0]
 
-            # if two players only add noise to first 4 action elements
             if player2:
+                # randomly select player
+                #act2 = player2[np.random.randint(0,2)].act(ob2)
                 act2 = player2.act(ob2)
 
             (ob_new, reward, done, _info) = env.step(np.hstack([act,act2]))
-            reward = reward + _info["winner"] + _info["reward_closeness_to_puck"] + _info["reward_touch_puck"] + _info["reward_puck_direction"]
-            + _info["reward_puck_before"]
+            # touch puck höher, muss trotzdem durch touch puck ausgleichbar sein
+            # positioning bisschen höher
+            # reward komplett rausnehmen? (winner höher skalieren)
+            # reward puck direction raus
+            # tore schießen höher als tor bekommen
+            # reward rausgenommen
+            #reward = reward + reward_weights[0] * _info["winner"] + reward_weights[1] * _info['punishment_distance_puck'] + reward_weights[2] * _info["reward_touch_puck"] + reward_weights[3] * _info["reward_puck_direction"]
+            #+ reward_weights[4] * _info['punishment_positioning']
+            reward = reward_weights[0] * _info["winner"] + reward_weights[1] * _info['punishment_distance_puck'] + reward_weights[2] * _info["reward_touch_puck"] + reward_weights[3] * _info["reward_puck_direction"]
+            + reward_weights[4] * _info['punishment_positioning']
 
             total_reward += reward
             agent.store_transition((ob, act, reward, ob_new, done))      
@@ -61,7 +76,8 @@ def train(env, agent, player2=False, max_episodes=200, max_steps=200, show=False
         if ((i-1)%20==0):
             print("{}: Done after {} steps. Reward: {}".format(i, step+1, total_reward))
     
-    agent.save_weights(f'DDPG/weights/{name}')
+        if (i % 5000) == 0:
+            agent.save_weights(f'DDPG/weights/{name}_{i}')
 
     return losses, [r[1] for r in stats]
 

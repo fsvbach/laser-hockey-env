@@ -518,9 +518,9 @@ class HockeyEnv(gym.Env, EzPickle):
       if self.winner == 0:  # tie
         r += 0
       elif self.winner == 1:  # you won
-        r += 100
+        r += 10
       else:  # opponent won
-        r -= 0
+        r -= 10
     return r
 
   def _get_info(self):
@@ -531,7 +531,7 @@ class HockeyEnv(gym.Env, EzPickle):
     if self.puck.position[0] <= CENTER_X and self.puck.linearVelocity[0] <= 0:
       dist_to_puck = dist_positions(self.player1.position, self.puck.position)
       max_dist = 250. / SCALE
-      max_reward = -10.  
+      max_reward = -1.  
       factor = max_reward / (max_dist * self.max_timesteps / 2)
       punishment_distance_puck += dist_to_puck * factor 
     # if self.puck.position[0] >= CENTER_X and self.puck.linearVelocity[0] >= 0: 
@@ -545,26 +545,27 @@ class HockeyEnv(gym.Env, EzPickle):
     # Proxy reward: touch puck
     reward_touch_puck = 0.
     if self.player1_has_puck == MAX_TIME_KEEP_PUCK:
-      reward_touch_puck = 5
+      reward_touch_puck = 1
     # if self.player2_has_puck == MAX_TIME_KEEP_PUCK:
     #   reward_touch_puck = -1.
       
     #reward puck in sight
     punishment_positioning = 0
-    # if self.player1.position[0] > self.puck.position[0]:
-    #     punishment_positioning -= 0.20
+    if self.player1.position[0] > self.puck.position[0]:
+        punishment_positioning -= 0.1
     if self.player2.position[0] < self.puck.position[0]: 
-        punishment_positioning += 0.20
+        punishment_positioning += 0.1
 
-    # reward correct for puck direction and high velocity
-    max_reward = 100.
+
+    # reward for correct puck direction and high velocity
+    max_reward = 5.
     factor = max_reward / (self.max_timesteps * MAX_PUCK_SPEED)
     reward_puck_direction = self.puck.linearVelocity[0] * factor  
 
     return {"winner": self.winner,
             "punishment_distance_puck": punishment_distance_puck,
             "reward_touch_puck": reward_touch_puck,
-            "reward_puck_direction": max(reward_puck_direction,0),
+            "reward_puck_direction": reward_puck_direction,
             'punishment_positioning': punishment_positioning
             }
 
@@ -810,6 +811,7 @@ class HockeyEnv_BasicOpponent(HockeyEnv):
   def __init__(self, mode=HockeyEnv.NORMAL, weak_opponent=False):
     super().__init__(mode=mode, keep_mode=True)
     self.opponent = BasicOpponent(weak=weak_opponent)
+    self.weak = True
     # linear force in (x,y)-direction, torque, and shooting
     self.action_space = spaces.Box(-1, +1, (4,), dtype=np.float32)
 
@@ -818,6 +820,12 @@ class HockeyEnv_BasicOpponent(HockeyEnv):
     a2 = self.opponent.act(ob2)
     action2 = np.hstack([action, a2])
     return super().step(action2)
+
+  def name(self): 
+      if self.weak: 
+          return "Weak Basic Opponent"
+      else: 
+          return "Strong Basic Opponent"
 
 
 from gym.envs.registration import register
