@@ -102,7 +102,7 @@ class Tournament:
         table['Soccer Score'] = self.soccer_scores
         table['Basic Score'] = self.basic_scores
         table = table.sort_values('Soccer Score', ascending=False)
-        table.to_csv('Plots/tournament_scores')
+        table.to_csv('Plots/tournament_scores.csv')
         print(table)
 
     
