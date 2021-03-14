@@ -17,9 +17,9 @@ class DDPGAgent(object):
 
         self.env = env
         self._observation_space = env.observation_space
-        self.action_dim = env.action_space.shape[0]
         # uncomment for pendulum env
-        #self.obs_dim = self._observation_space.shape[0]
+        #self.action_dim = env.action_space.shape[0]
+        self.obs_dim = self._observation_space.shape[0]
         self.action_dim = env.num_actions
 
         self._config = {
