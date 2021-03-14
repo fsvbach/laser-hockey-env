@@ -96,7 +96,7 @@ class DQNAgent(object):
         self.T.load_state_dict(self.Q.state_dict())
         
     def name(self): 
-        return "DQN Agent"
+        return "DQN"
     
     def save_weights(self, filepath):
         torch.save(self.Q.state_dict(), filepath)

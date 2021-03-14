@@ -58,44 +58,69 @@ class Tournament:
         self.env = env
         # results contains the results for the basic metric and the football metric in two matrices
         n = len(agents)
-        self.results = np.zeros((2, n, n))
+        self.results = np.zeros((n,n),  dtype=(float,3))
+        self.results_basic = np.zeros((n, n))
+        self.results_soccer = np.zeros((n, n))
+        self.total_scores = np.zeros((n,3))
         
     def run(self, rounds=100): 
         for i, player1 in enumerate(self.agents): 
             for j, player2 in enumerate(self.agents): 
-                if i==j: 
-                    continue
                 stats = gameplay(self.env, player1, player2, rounds, show=False)
+                self.results[i][j] = (stats[0], stats[1], stats[2])
+                self.results[j][i] = (stats[0], stats[2], stats[1])
+                
+                
+                #compute sum of all all losses ties and wins for every player
+                for k in range(3):
+                    self.total_scores[i][k] += stats[k]
+                    self.total_scores[j][k] += stats[k]
+                
+                if i == j:
+                    # results based on the basic metric
+                    self.results_basic[i][j] = None
+                    self.results_basic[j][i] = None
+                    # results based on the soccer metric
+                    self.results_soccer[i][j] = None
+                    self.results_soccer[j][i] = None
+                    continue
                 # results based on the basic metric
-                self.results[0][i][j] = stats[1] - stats[2]
-                self.results[0][j][i] = stats[2] - stats[1]
+                self.results_basic[i][j] = (stats[1] - stats[2])/rounds
+                self.results_basic[j][i] = (stats[2] - stats[1])/rounds
                 # results based on the soccer metric
-                self.results[1][i][j] = stats[0] + 3*stats[1]
-                self.results[1][j][i] = stats[0] + 3*stats[2]
+                self.results_soccer[i][j] = (stats[0] + 3*stats[1])/rounds 
+                self.results_soccer[j][i] = (stats[0] + 3*stats[2])/rounds 
+        self.compute_scores()
+
+    def compute_scores(self):
+        self.soccer_scores = np.nanmean(self.results_soccer, axis=1)
+        self.basic_scores = np.nanmean(self.results_basic, axis=1)
+        
+    def print_scores(self):
+        print("\nTotal Ties-Wins-Losses:")
+        for i,a in enumerate(self.agents): 
+            print (a.name(), ": ", self.total_scores[i])
+        print("\nSoccer Scores: ", self.soccer_scores)
+        print("\nBasic Scores: ", self.basic_scores)
+    
     
     def show_results(self): 
-        fig, axs = plt.subplots(2, 1, constrained_layout=True)
+        fig, axs = plt.subplots(1, 2, constrained_layout=True)
         axs[0].set_title("basic metric")
         axs[1].set_title("soccer metric")
         
-        labels = [a.name() for a in self.agents]
+        labels = [""] + [a.name() for a in self.agents]
+        print(labels)
         axs[0].set_xticklabels(labels, minor=False)
         axs[0].set_yticklabels(labels, minor=False)
         axs[1].set_xticklabels(labels, minor=False)
         axs[1].set_yticklabels(labels, minor=False)
         
-        im =axs[0].imshow(self.results[0], cmap='coolwarm', interpolation='nearest')
-        axs[1].imshow(self.results[1], cmap='coolwarm', interpolation='nearest')
-        plt.colorbar(mappable=im, ax=axs)
+        basic = axs[0].imshow(self.results_basic, cmap='RdYlGn', interpolation='nearest')
+        soccer = axs[1].imshow(self.results_soccer, cmap='Greens', interpolation='nearest')
+        plt.colorbar(mappable=basic, ax=axs[0])
+        plt.colorbar(mappable=soccer, ax=axs[1])
         plt.show()
-
-
-        
-
-
-
-
-
 
 
 

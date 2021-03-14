@@ -714,9 +714,9 @@ class BasicOpponent():
     
   def name(self): 
       if self.weak: 
-          return "Weak Basic Opponent"
+          return "Weak"
       else: 
-          return "Strong Basic Opponent"
+          return "Strong"
 
   def act(self, obs, eps=0, verbose=False):
     alpha = obs[2]
