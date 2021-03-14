@@ -58,7 +58,6 @@ class Tournament:
         self.env = env
         # results contains the results for the basic metric and the football metric in two matrices
         n = len(agents)
-        self.results = np.zeros((n,n),  dtype=(float,3))
         self.results_basic = np.zeros((n, n))
         self.results_soccer = np.zeros((n, n))
         self.total_scores = np.zeros((n,3))
@@ -70,29 +69,24 @@ class Tournament:
                 if i == j:
                     # results based on the basic metric
                     self.results_basic[i][j] = None
-                    self.results_basic[j][i] = None
                     # results based on the soccer metric
                     self.results_soccer[i][j] = None
-                    self.results_soccer[j][i] = None
                     continue
-                show = player1.name() =="DQN"
-                stats = gameplay(self.env, player1, player2, rounds, show=show)
-                self.results[i][j] = (stats[0], stats[1], stats[2])
-                self.results[j][i] = (stats[0], stats[2], stats[1])
-                
-                
-                #compute sum of all all losses ties and wins for every player
-                for k in range(3):
-                    self.total_scores[i][k] += stats[k]
-                    self.total_scores[j][k] += stats[k]
-                
+                # show = player1.name() =="DQN"
+                stats = gameplay(self.env, player1, player2, rounds, show=show)              
                 
                 # results based on the basic metric
-                self.results_basic[i][j] = (stats[1] - stats[2])/rounds
-                self.results_basic[j][i] = (stats[2] - stats[1])/rounds
+                self.results_basic[i][j] += (stats[1] - stats[2])/rounds/2
+                self.results_basic[j][i] += (stats[2] - stats[1])/rounds/2
                 # results based on the soccer metric
-                self.results_soccer[i][j] = (stats[0] + 3*stats[1])/rounds 
-                self.results_soccer[j][i] = (stats[0] + 3*stats[2])/rounds 
+                self.results_soccer[i][j] += (stats[0] + 3*stats[1])/rounds /2
+                self.results_soccer[j][i] += (stats[0] + 3*stats[2])/rounds /2
+                
+                #total scores summing
+                self.total_scores[i] += stats
+                stats[[1,2]]=stats[[2,1]]
+                self.total_scores[j] += stats
+                
         self.compute_scores()
 
     def compute_scores(self):
