@@ -28,6 +28,8 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 # strong_basic_opponent = h_env.BasicOpponent(weak=False)
 # weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
+# td3 = TD3(pretrained='stronger')
+
 # ddpg = DDPGAgent(env,
 #                           actor_lr=1e-4,
 #                           critic_lr=1e-3,
@@ -53,7 +55,7 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 #                         pretrained   = f'DQN/weights/{load_weights}')
 
 
-# stats = gameplay(env, q_agent, player2=strong_basic_opponent, N=50, show=True, analyze=False)
+# stats = gameplay(env, q_agent, player2=td3, N=100, show=False, analyze=False)
 # print("ties-wins-losses: ", stats)
 
 #########################################################################################################
@@ -96,7 +98,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
 
 agents = [weak_basic_opponent, strong_basic_opponent, q_agent, td3, ddpg2]
 tournament = Tournament(env, agents)
-tournament.run(5)
+tournament.run(50)
 tournament.print_scores()
 tournament.show_results()
 
