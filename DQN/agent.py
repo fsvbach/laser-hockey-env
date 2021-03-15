@@ -2,13 +2,11 @@ from .feedforward import Feedforward
 from .memory import Memory
 import numpy as np
 import torch
-from client.remoteControllerInterface import RemoteControllerInterface
-
 
 """ Q Network, input: observations, output: q-values for all actions """
 class QFunction(Feedforward):
     def __init__(self, observation_dim, action_dim,
-                 hidden_sizes=[200,200,200], learning_rate = 0.0002):
+                 hidden_sizes=[100,100], learning_rate = 0.0002):
         super().__init__(input_size=observation_dim, 
                          hidden_sizes=hidden_sizes, 
                          output_size=action_dim)
@@ -51,7 +49,7 @@ class QFunction(Feedforward):
         return np.argmax(self.predict(observations), axis=-1)
     
     
-class DQNAgent(RemoteControllerInterface):
+class DQNAgent(object):
     """
     Agent implementing Q-learning with NN function approximation.    
     """
@@ -67,7 +65,7 @@ class DQNAgent(RemoteControllerInterface):
             "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
-            "learning_rate": 0.0001, 
+            "learning_rate": 0.001, 
             "update_rule": 20,
             "multistep": 3,
             "omega": 1,
@@ -90,15 +88,10 @@ class DQNAgent(RemoteControllerInterface):
                 
         if pretrained:
             try:
-                self.load_weights(pretrained)
+                self.load_weights(f'{pretrained}')
             except:
                 print(f'ERROR: Could not load weights from {pretrained}')
-        RemoteControllerInterface.__init__(self, identifier='StillTrying_DQN')
-
-    
-    def remote_act(self, obs):
-        return self.act(obs, eps=0)
-        
+            
     def _update_target_net(self):        
         self.T.load_state_dict(self.Q.state_dict())
         
