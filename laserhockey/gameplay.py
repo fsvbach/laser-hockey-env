@@ -105,7 +105,7 @@ class Tournament:
     
     
     def show_results(self): 
-        fig, axs = plt.subplots(1, 2, constrained_layout=True)
+        fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize=(20,12))
         axs[0].set_title("basic metric")
         axs[1].set_title("soccer metric")
         
