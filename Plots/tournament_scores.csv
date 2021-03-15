@@ -1,6 +1,6 @@
 ,Wins,Ties,Losses,Soccer Score,Basic Score
-TD3-superagent,174,186,40,1.77,0.335
-TD3-stronger,172,117,111,1.582,0.152
-TD3-traininghall,152,173,75,1.572,0.192
-Strong,67,186,147,0.968,-0.2
-Weak,35,138,227,0.607,-0.48
+TD3-superagent,135,144,41,1.716,0.294
+TD3-best_avg,121,143,56,1.581,0.203
+TD3-stronger,119,103,98,1.437,0.066
+Strong,53,157,110,0.988,-0.178
+Weak,37,123,160,0.731,-0.384

@@ -100,7 +100,6 @@ env.close()
 # td4 = TD3(pretrained='traininghall')
 # td3 = TD3(pretrained='superagent')
 # td5 = TD3(pretrained='stronger')
-
 # strong_basic_opponent = h_env.BasicOpponent(weak=False)
 # weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
@@ -129,9 +128,18 @@ env.close()
 # TRAINING HALL
 
 
+<<<<<<< HEAD
 # load_weights = 'training_hall:50000_omega=110_1_150_75_10'
 # load_weights = ''
 
+=======
+<<<<<<< HEAD
+# #load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+=======
+#load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+>>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
+# load_weights = 'exp2_15000'
+>>>>>>> a04c6403aff78728abbabe13942caa709c817ccc
 # training_hall = TrainingHall2()
 
 # td3 = TD3(pretrained='stronger')
