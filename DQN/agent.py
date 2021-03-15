@@ -6,7 +6,7 @@ import torch
 """ Q Network, input: observations, output: q-values for all actions """
 class QFunction(Feedforward):
     def __init__(self, observation_dim, action_dim,
-                 hidden_sizes=[100,100], learning_rate = 0.0002):
+                 hidden_sizes=[200,200,200], learning_rate = 0.0002):
         super().__init__(input_size=observation_dim, 
                          hidden_sizes=hidden_sizes, 
                          output_size=action_dim)
@@ -61,22 +61,22 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 1,                               
+            "eps": 0.5,                               
             "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
-            "learning_rate": 0.00025, 
+            "learning_rate": 0.0001, 
             "update_rule": 20,
-            "multistep": 5,
+            "multistep": 3,
             "omega": 1,
-            "winner": 10,
+            "winner": 1,
             "positioning": 1,
-            "distance_puck": 150,
-            "puck_direction": 75,
-            "touch_puck": 10
+            "distance_puck": 1,
+            "puck_direction": 1,
+            "touch_puck": 1
         }
-        if userconfig: 
-            self._config.update(userconfig["userconfig"])        
+        # if userconfig: 
+        #     self._config.update(userconfig["userconfig"])        
         self.transition = []
         self._eps   = self._config["eps"]
         self.buffer = Memory(max_size=self._config["buffer_size"])
@@ -138,8 +138,6 @@ class DQNAgent(object):
             self.transition = []
             
     def train(self, iter_fit=32):
-        if self.buffer.size is not self.buffer.max_size:
-            return []
         losses = []
         omega = self._config["omega"]
         k     = self._config["update_rule"]
