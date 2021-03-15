@@ -1,7 +1,0 @@
-,Wins,Ties,Losses,Soccer Score,Basic Score
-TD3-superagent,54,31,15,1.93,0.39
-TD3-lasttry,43,16,41,1.45,0.02
-TD3-best_avg,37,31,32,1.42,0.05
-DQN,37,16,47,1.27,-0.1
-DDPG,29,28,43,1.15,-0.14
-Strong,21,36,43,0.99,-0.22

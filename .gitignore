@@ -5,6 +5,9 @@ __pycache__/
 
 runs/*
 TD3.ipynb
+plots_report/*
+Plots/*
+client/user0/*
 
 # C extensions
 *.so
