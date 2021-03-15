@@ -12,6 +12,7 @@ from laserhockey.TrainingHall import TrainingHall
 from DQN import agent
 from DDPG.ddpg_agent import DDPGAgent
 from TD3.agent import TD3
+from DDPG.train import train
 
 env = HockeyEnv()
 
@@ -25,6 +26,10 @@ basic  = BasicOpponent(weak=False)
 
 
 # env.register_opponents([basic,last])#,ddpg,q_agent])
+
+ddpg = DDPGAgent()
+
+train(env, agent=ddpg)
 
 td3 = TD3(pretrained='traininghall')
 

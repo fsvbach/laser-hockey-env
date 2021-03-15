@@ -8,6 +8,9 @@ import torch.nn as nn
 import torch
 import numpy as np
 
+"""
+    Neural Network Actor class
+"""
 class Actor(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, learning_rate = 1e-4):
         super(Actor, self).__init__()

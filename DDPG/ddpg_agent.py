@@ -7,20 +7,21 @@ import numpy as np
 from .memory import Memory
 from .actor import Actor
 from .critic import Critic
-
+from gym import spaces
 
 class DDPGAgent(object):
     """
     Agent implementing DDPG.
     """
-    def __init__(self, env, pretrained=False, **userconfig):
+    def __init__(self, observation_space=spaces.Box(-np.inf, np.inf, shape=(18,), dtype=np.float32), 
+                         action_space=spaces.Box(-1, +1, (4,), dtype=np.float32), pretrained=False, **userconfig):
 
-        self.env = env
-        self._observation_space = env.observation_space
+        self._observation_space = observation_space
         # uncomment for pendulum env
         #self.action_dim = env.action_space.shape[0]
         self.obs_dim = self._observation_space.shape[0]
-        self.action_dim = env.num_actions
+        self.action_space=action_space
+        self.action_dim = 4
 
         self._config = {
             "discount": 0.9,
@@ -30,7 +31,7 @@ class DDPGAgent(object):
             "actor_lr": 1e-4,
             "critic_lr": 1e-3,
             "update_target_every": 20,
-            "update_rate": 1e-2,
+            "update_rate": 0.05,
         }
         self._config.update(userconfig)
 
@@ -39,6 +40,7 @@ class DDPGAgent(object):
         self.hidden_size = self._config["hidden_size"]
         self.discount = self._config["discount"]
 
+        # create actor, critic and targets
         self.actor         = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["actor_lr"])
         self.actor_target  = Actor(input_size=self.obs_dim, hidden_size=self.hidden_size, output_size=self.action_dim)
         self.critic        = Critic(input_size=self.obs_dim + self.action_dim, hidden_size=self.hidden_size, output_size=self.action_dim, learning_rate=self._config["critic_lr"])
@@ -63,6 +65,7 @@ class DDPGAgent(object):
         # load pretrained model
         if pretrained:
             try:
+                self.model_name=pretrained
                 self.load_weights(pretrained)
             except:
                 print(f'ERROR: Could not load weights from {pretrained}')
@@ -86,7 +89,7 @@ class DDPGAgent(object):
         self.critic.eval()
     
     def name(self):
-        return "DDPG"
+        return self.model_name
 
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
@@ -98,7 +101,7 @@ class DDPGAgent(object):
             #return self.actor.forward(obs).detach().numpy()[0,0]
             return self.actor.forward(obs).detach().numpy().flatten()
         else:
-            return self.env.action_space.sample()[:self.action_dim]
+            return self.action_space.sample()[:self.action_dim]
         
 
     def train(self, iter_fit=32):
@@ -115,28 +118,33 @@ class DDPGAgent(object):
             a = np.stack(data[:,1]) # a
             rew = np.stack(data[:,2])[:,None] # rew
 
+            # convert to tensors
             a = torch.FloatTensor(a)
             s = torch.FloatTensor(s)
             s_prime = torch.FloatTensor(s_prime)
             rew = torch.FloatTensor(rew)
 
+            # compute q values and td-target
             gamma=self.discount
             q = self.critic.forward(s, a)
             a_prime = self.actor_target.forward(s_prime)
             next_q = self.critic_target.forward(s_prime, a_prime.detach())
             td_target = rew + gamma * torch.logical_not(torch.from_numpy(done)) * next_q
             
+            # actor training
             actor_loss = -self.critic.forward(s, self.actor.forward(s)).mean()
             self.actor.optimizer.zero_grad()
             actor_loss.backward()
             self.actor.optimizer.step()
 
+            # critic training
             critic_loss = self.critic.fit(q, td_target)
             critic_l += critic_loss
             actor_l += actor_loss
 
             losses.append(actor_loss + critic_loss)
 
+            # update target nets
             self.train_iter+=1
             if self.train_iter % self._config["update_target_every"] == 0:
                 self._update_actor_target_net()

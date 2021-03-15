@@ -1,37 +1,26 @@
-# laser-hockey-env
+# Client for the ALRL2020 Hockey Tournament
 
-This repository contains two version of a hockey-like game
+## RemoteController Interface
 
-## Install
+The client expects your Controller to be of type `RemoteControllerInterface`. You have to implement at least the abstract method `remote_act` provided by the interface. See `remoteBasicOpponent.py` for a reference implementation.
 
-``python3 -m pip install git+https://github.com/martius-lab/laser-hockey-env.git``
+## Client
 
-or add the following line to your Pipfile
+The client can be run in one of two modes: `interactive` and `non-interactive`.
 
-``laserhockey = {editable = true, git = "https://git@github.com/martius-lab/laser-hockey-env.git"}``
+### Interactive Mode
 
+In interactive mode, you can interact with the client via a `cmd`-interface. As soon as you start queueing for games (`start_queueing`) you will be continuously paired with other players to play against each other. You can enter the `cmd`-interface while playing/queuing by pressing `<ESC>`.
 
-## HockeyEnv
+### Non-Interactive Mode
 
-![Screenshot](assets/hockeyenv1.png)
+You can run the client in the non-interactive mode by setting `interactive = False` and `op = 'start_queueing'`.
 
-``laserhockey.hockey_env.HockeyEnv``
+If `num_games = None` the client will continuously queuing for new games. You can limit the number of games played by setting `num_games : int > 0`.
 
-A two-player (one per team) hockey environment.
-For our Reinforcment Learning Lecture @ Uni-Tuebingen.
-See Hockey-Env.ipynb notebook on how to run the environment.
+## Train loop
 
-The environment can be generated directly as an object or via the gym registry:
+If you want to use games played online to train your policy, we suggest to run one worker process with the client in non-interactive mode to collect data and one process that trains the policy. 
 
-``env = gym.envs.make("Hockey-v0")``
+The train process has to load new data from the disc and add it to the replay buffer while the data collection worker should update the policy parameters from time to time.
 
-There is also a version against the basic opponent (with options)
-
-``env = gym.envs.make("Hockey-One-v0", mode=0, weak_opponent=True)``
-
-
-
-## LaserHockeyEnv
-
-A laser-hockey game implementation within openAI gym using the Box2D engine. It is quite a challenging environment
-See Laser-Hockey-Env.ipynb notebook on how to run the environment.

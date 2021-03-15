@@ -8,6 +8,9 @@ import torch.nn as nn
 import torch
 import numpy as np
 
+"""
+    Neural network critic class
+"""
 class Critic(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, learning_rate=1e-3):
         super(Critic, self).__init__()
