@@ -18,7 +18,7 @@ from DQN.agent import DQNAgent
 from laserhockey.hockey_env import HockeyEnv
 
 
-load_weights = "training_hall_1"
+load_weights = "alg2"
 env = HockeyEnv()
 
 
