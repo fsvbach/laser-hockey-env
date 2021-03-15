@@ -73,19 +73,19 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 env = h_env.HockeyEnv()
 load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
 
-td4 = TD3(pretrained='best_avg')
-td3 = TD3(pretrained='lasttry')
+td4 = TD3(pretrained='traininghall')
+td3 = TD3(pretrained='superagent')
 td5 = TD3(pretrained='stronger')
 
 strong_basic_opponent = h_env.BasicOpponent(weak=False)
 weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
-ddpg = DDPGAgent(env,
-                actor_lr=1e-4,
-                critic_lr=1e-3,
-                update_rate=0.05,
-                discount=0.9, update_target_every=20,
-                pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
+ddpg= DDPGAgent(env,
+                         actor_lr=1e-4,
+                         critic_lr=1e-3,
+                         update_rate=0.05,
+                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-10000")
+
 
 q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
@@ -93,7 +93,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
 
 agents = [weak_basic_opponent, strong_basic_opponent, td3, td4,td5]
 tournament = Tournament(env, agents)
-tournament.run(10)
+tournament.run(50)
 tournament.print_scores()
 tournament.show_results()
 

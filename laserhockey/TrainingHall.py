@@ -45,11 +45,11 @@ class TrainingHall(h_env.HockeyEnv):
       if self.counter % self.period == 0:
           self.counter=0
           weights = self.update_weights(add=True)
-          print(f"\ncurrent winratios: {self.weights[-1]}\n")
-          # print(f'... without weights: {weights}\n')
+          print(f"\ncurrent winratios: {self.weights[-1]}")
+          print(f'... with weights: {weights}\n')
           self.next_opponents = np.random.choice(self.agents, 
-                                                 size=self.period)#,
-                                                 #p=weights)
+                                                 size=self.period,
+                                                 p=weights)
       self.opponent = self.next_opponents[self.counter]
       self.counter += 1
       return super().reset(one_starting, mode)

@@ -19,18 +19,16 @@ stupid = StupidOpponent()
 basic = BasicOpponent(weak=False)
 weak = BasicOpponent(weak=True)
 
-env = TrainingHall(weak_opponent=True)
+# env = TrainingHall(weak_opponent=True)
 
 basic  = BasicOpponent(weak=False)
-td3   = TD3(env.observation_space, env.action_space, pretrained='stronger')
-last = TD3(env.observation_space, env.action_space, pretrained='lasttry')
 
 
-env.register_opponents([basic,last])#,ddpg,q_agent])
+# env.register_opponents([basic,last])#,ddpg,q_agent])
 
-td3 = TD3(pretrained='best_avg')
+td3 = TD3(pretrained='traininghall')
 
-stats = gameplay(env, td3, player2=False, N=10, show=True, analyze=False)
+stats = gameplay(env, td3, player2=td3, N=10, show=True, analyze=False)
 print(stats)
 
 # env.close()
