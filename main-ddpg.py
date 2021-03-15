@@ -44,7 +44,7 @@ ddpg_trained= DDPGAgent(env,
                          actor_lr=1e-4,
                          critic_lr=1e-3,
                          update_rate=0.05,
-                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-attack-eps-10000")
+                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-10000")
 
 
 ddpg_player = DDPGAgent(env,
