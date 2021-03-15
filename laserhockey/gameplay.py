@@ -50,7 +50,6 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
 
 
 
-"ties-wins-losses"
 class Tournament: 
     
     def __init__(self, env, agents): 
@@ -89,7 +88,7 @@ class Tournament:
 
     def compute_scores(self):
         self.soccer_scores = np.round(np.nanmean(self.results_soccer, axis=1),3)
-        self.basic_scores =np.round( np.nanmean(self.results_basic, axis=1),3)
+        self.basic_scores =np.round(np.nanmean(self.results_basic, axis=1),3)
         
     def print_scores(self):
         print("\nTotal Ties-Wins-Losses:")

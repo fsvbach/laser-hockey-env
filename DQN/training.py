@@ -2,8 +2,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from laserhockey.gameplay import gameplay
-import laserhockey.hockey_env as h_env
-
 
 fps=2
 

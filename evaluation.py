@@ -12,12 +12,12 @@ import laserhockey.hockey_env as h_env
 from laserhockey.gameplay import gameplay
 from DDPG.ddpg_agent import DDPGAgent
 from TD3.agent import TD3
-from laserhockey.TrainingHall2 import TrainingHall2
+from laserhockey.TrainingHall import TrainingHall2
 from laserhockey.gameplay import Tournament
 
 
 env = h_env.HockeyEnv()
-load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+load_weights = 'alg2'
 
 td4 = TD3(pretrained='best_avg')
 td3 = TD3(pretrained='superagent')
@@ -38,7 +38,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         pretrained   = f'DQN/weights/{load_weights}')
 
 
-agents = [ strong_basic_opponent, td3, td4,td5,ddpg,q_agent]
+agents = [weak_basic_opponent, strong_basic_opponent, td3, ddpg, q_agent]
 tournament = Tournament(env, agents)
 tournament.run(10)
 tournament.print_scores()
