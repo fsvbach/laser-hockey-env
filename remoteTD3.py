@@ -6,7 +6,7 @@ from client.backend.client import Client
 
 class RemoteTD3(agent.TD3, RemoteControllerInterface):
 
-    def __init__(self, pretrained='stronger'):
+    def __init__(self, pretrained='superagent'):
         agent.TD3.__init__(self, pretrained=pretrained)
         RemoteControllerInterface.__init__(self, identifier='StillTrying-TD3')
 
