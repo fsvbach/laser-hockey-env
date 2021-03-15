@@ -133,31 +133,31 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
 # #load_weights = 'training_hall:50000_omega=110_1_150_75_10'
 # load_weights = 'training_hall:50000_omega=110_1_150_75_10'
-load_weights = 'exp4'
+load_weights = 'against_weak_5000'
 training_hall = TrainingHall2()
 
-td3 = TD3(pretrained='stronger')
+# td3 = TD3(pretrained='stronger')
 
-strong_basic_opponent = h_env.BasicOpponent(weak=False)
-weak_basic_opponent = h_env.BasicOpponent(weak=True)
-ddpg = DDPGAgent(training_hall,
-                          actor_lr=1e-4,
-                          critic_lr=1e-3,
-                          update_rate=0.05,
-                          discount=0.9, update_target_every=20,
-                          pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
+# strong_basic_opponent = h_env.BasicOpponent(weak=False)
+# weak_basic_opponent = h_env.BasicOpponent(weak=True)
+# ddpg = DDPGAgent(training_hall,
+#                           actor_lr=1e-4,
+#                           critic_lr=1e-3,
+#                           update_rate=0.05,
+#                           discount=0.9, update_target_every=20,
+#                           pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
 
-ddpg2 = DDPGAgent(training_hall,
-                          actor_lr=1e-4,
-                          critic_lr=1e-3,
-                          update_rate=0.05,
-                          discount=0.9, update_target_every=20,
-                          pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
+# ddpg2 = DDPGAgent(training_hall,
+#                           actor_lr=1e-4,
+#                           critic_lr=1e-3,
+#                           update_rate=0.05,
+#                           discount=0.9, update_target_every=20,
+#                           pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
 
 
-q_agent2 = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
-                        convert_func =  training_hall.discrete_to_continous_action,
-                        pretrained   = 'DQN/weights/alg2')
+# q_agent2 = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
+#                         convert_func =  training_hall.discrete_to_continous_action,
+#                         pretrained   = 'DQN/weights/alg2')
 
 
 q_agent = agent.DQNAgent(training_hall.observation_space, training_hall.discrete_action_space,
@@ -173,7 +173,7 @@ store_weights = "against_weak"
 #losses, rewards = training.train(normal, q_agent, player2=basic_opponent, name=store_weights, show=False, max_episodes=50000)
 losses, rewards = training.train(training_hall, q_agent, name=store_weights, show=False, max_episodes=50000)
 
-stats = gameplay(training_hall, q_agent, N=10, show=True, analyze=False)
+stats = gameplay(training_hall, q_agent, N=50, show=True, analyze=False)
 print("ties-wins-losses: ", stats)
 training_hall.close()
 

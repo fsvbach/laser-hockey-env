@@ -8,6 +8,9 @@ TD3.ipynb
 plots_report/*
 Plots/*
 client/user0/*
+DQN/recorded_games
+DQN/plots
+DQN/weights
 
 # C extensions
 *.so
