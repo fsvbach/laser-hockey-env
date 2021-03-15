@@ -17,21 +17,19 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
     win_stats = np.zeros((N,3))
     max_len = 500
     fps = 100
-    training_hall = isinstance(env, TrainingHall)
     for n in range(N):
         obs = env.reset()
-        obs_agent2 = env.obs_agent_two()
+        if not player2: 
+            print("playing against: ", env.opponent.name())
         total_reward=0
         for _ in range(max_len):
             a1 = player1.act(obs, eps=0) 
-            if training_hall: 
-                (ob_new, reward, done, _info) = env.step(a1)
-            else:
-                a2 = [0,0.,0,0] 
-                if player2:
-                    a2 = player2.act(obs_agent2)
-                obs, r, done, _info = env.step(np.hstack([a1,a2]))    
+            if player2: 
                 obs_agent2 = env.obs_agent_two()
+                a2 = player2.act(obs_agent2)
+                obs, reward, done, _info = env.step(np.hstack([a1,a2]))    
+            else: 
+                obs, reward, done, _info = env.step(a1)
             if show:
                 time.sleep(1/fps)
                 if analyze:
@@ -56,7 +54,6 @@ class Tournament:
     def __init__(self, env, agents): 
         self.agents = agents
         self.env = env
-        # results contains the results for the basic metric and the football metric in two matrices
         n = len(agents)
         self.results_basic = np.zeros((n, n))
         self.results_soccer = np.zeros((n, n))

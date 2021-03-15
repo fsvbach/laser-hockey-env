@@ -62,11 +62,11 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
     
     for i in range(max_episodes):
         if i % (max_episodes/10) == 0 and i != 0: 
-            if i != 0:
+            if q_agent._config['eps'] >= 0.1:
                 q_agent.reduce_exploration(0.1* q_agent._config['eps'])
                 #q_agent._config['discount'] += 0.01
-                q_agent.save_weights(f'DQN/weights/{name}_{i}')
-            
+                
+            q_agent.save_weights(f'DQN/weights/{name}_{i}')
             # create plots from losses and rewards till now
             rewards =  [r[1] for r in stats]
             fig, axs = plt.subplots(2, 1, constrained_layout=True)
@@ -76,12 +76,8 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
             axs[1].plot(running_mean(losses, 64))
             plt.show()
             
-            normal = h_env.HockeyEnv(mode=h_env.HockeyEnv.NORMAL)
-            if not player2: 
-                player2 = env.opponent
-            winrate = gameplay(normal, q_agent, player2, N=10, show=True, analyze=False)
+            winrate = gameplay(env, q_agent, player2, N=2, show=True, analyze=False)
             print("ties-wins-losses: ", winrate)
-            normal.close()
             
         total_reward = 0
         ob = env.reset()
@@ -108,12 +104,15 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
                 break    
             ob=ob_new  
             
-        # print('buffer_size',q_agent.buffer.size)
+        #print('buffer_size',q_agent.buffer.size)
         losses.extend(q_agent.train(32))
         stats.append([i,total_reward,t+1])    
         
-        if ((i-1)%20==0):
-            print("Episode {}: Done after {} steps. Reward: {}".format(i, t+1, total_reward))
+        if ((i-1)%21==0):
+            opponent = player2
+            if not player2: 
+                opponent = env.opponent
+            print("Episode {}: Playing against {}. Done after {} steps. Reward: {}".format(i, opponent.name(), t+1, total_reward))
         
         # if ((i-1)%10000==0):
         #     q_agent.save_weights(f'DQN/weights/{name}_{i}')
