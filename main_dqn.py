@@ -24,7 +24,7 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
 
 env = h_env.HockeyEnv()
-load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
+load_weights = 'exp4_5000'
 #load_weights = 'training_hall_1'
 
 td3 = TD3(pretrained='stronger')
@@ -39,7 +39,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         pretrained   = f'DQN/weights/{load_weights}')
 
 
-stats = gameplay(env, q_agent, player2=strong_basic_opponent, N=10, show=True, analyze=False)
+stats = gameplay(env, q_agent, player2=weak_basic_opponent, N=100, show=False, analyze=False)
 print("ties-wins-losses: ", stats)
 env.close()
 
@@ -97,16 +97,9 @@ env.close()
 # env = h_env.HockeyEnv()
 # load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
 
-<<<<<<< HEAD
-td4 = TD3(pretrained='best_avg')
-td3 = TD3(pretrained='superagent')
-td5 = TD3(pretrained='stronger')
-=======
 # td4 = TD3(pretrained='traininghall')
 # td3 = TD3(pretrained='superagent')
 # td5 = TD3(pretrained='stronger')
->>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
-
 # strong_basic_opponent = h_env.BasicOpponent(weak=False)
 # weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
@@ -121,19 +114,11 @@ td5 = TD3(pretrained='stronger')
 #                         convert_func =  env.discrete_to_continous_action,
 #                         pretrained   = f'DQN/weights/{load_weights}')
 
-<<<<<<< HEAD
-agents = [weak_basic_opponent, strong_basic_opponent, td3, td4,td5]
-tournament = Tournament(env, agents)
-tournament.run(40)
-tournament.print_scores()
-tournament.show_results()
-=======
 # agents = [weak_basic_opponent, strong_basic_opponent, td3, td4,td5]
 # tournament = Tournament(env, agents)
 # tournament.run(50)
 # tournament.print_scores()
 # tournament.show_results()
->>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
 
 
 
@@ -144,11 +129,17 @@ tournament.show_results()
 
 
 <<<<<<< HEAD
+# load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+# load_weights = ''
+
+=======
+<<<<<<< HEAD
 # #load_weights = 'training_hall:50000_omega=110_1_150_75_10'
 =======
 #load_weights = 'training_hall:50000_omega=110_1_150_75_10'
 >>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
 # load_weights = 'exp2_15000'
+>>>>>>> a04c6403aff78728abbabe13942caa709c817ccc
 # training_hall = TrainingHall2()
 
 # td3 = TD3(pretrained='stronger')
@@ -181,10 +172,9 @@ tournament.show_results()
 
 
 # # weak basic opponent is in training per default
-# training_hall.register_opponents([strong_basic_opponent])
 
 # #store_weights = f'training_hall:50000_omega=1{q_agent._config["winner"]}_{q_agent._config["positioning"]}_{q_agent._config["distance_puck"]}_{q_agent._config["puck_direction"]}_{q_agent._config["touch_puck"]}'
-# store_weights = "exp3"
+# store_weights = "exp4"
 
 # #losses, rewards = training.train(normal, q_agent, player2=basic_opponent, name=store_weights, show=False, max_episodes=10000)
 # losses, rewards = training.train(training_hall, q_agent, name=store_weights, show=False, max_episodes=10000)
