@@ -26,34 +26,36 @@ weak = h_env.BasicOpponent(weak=True)
 
 strong = h_env.BasicOpponent(weak=False)
 
-td4     = TD3(env.observation_space.shape[0],
-              env.num_actions)
-td4.load('stronger')
+#td4     = TD3(env.observation_space,
+ #             env.num_actions)
+#td4.load('stronger')
 
 # best runs
 # win to strong:
-# ddpg-normal-eps-noise-basic-35000
+
+# ddpg-normal-weak-35000
 # lose to strong:
-# ddpg-normal-noeps-noise-td3-40000
-# ddpg-attack-ounoise-5001
+# ddpg-normal-td3-40000
+# ddpg-attack-5000
+# ddpg-normal-eps-noise-10000
 
 
 ddpg_trained= DDPGAgent(env,
                          actor_lr=1e-4,
                          critic_lr=1e-3,
-                         update_rate=0.02,
-                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-noise-eps-normal-strong-10000_5000")
+                         update_rate=0.05,
+                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-10000")
 
 
 ddpg_player = DDPGAgent(env,
-                         actor_lr=1e-5,
-                         critic_lr=1e-4,
-                         update_rate=0.01,
+                         actor_lr=1e-4,
+                         critic_lr=1e-3,
+                         update_rate=0.05,
                          discount=0.9, update_target_every=20)
 
 
-""" name="ddpg-noise-eps-normal-strong-10000"
-losses, rewards = ddpg_train.train(normal, ddpg_player, player2=strong, name=name, max_episodes=10000, show=False, reward_weights=[20, 1, 10, 0, 2])
+""" name="ddpg-normal-weak-10000"
+losses, rewards = ddpg_train.train(normal, ddpg_player, player2=weak, name=name, max_episodes=10000, show=False, reward_weights=[10, 1, 5, 0, 2])
 
 
 plt.plot(training.running_mean(losses,64))
@@ -69,8 +71,13 @@ plt.close() """
   
 
 for i in range (20):
-    stats = gameplay(normal, ddpg_trained, player2=strong, N=100, show=False, analyze=False)
-    print(stats)
+    stats = gameplay(normal, ddpg_trained, player2=strong, N=20, show=False, analyze=False)
+    if stats[1] > stats[2]:
+        print(stats, "win")
+    if stats[1] == stats[2]:
+        print(stats, "draw")
+    if stats[1] < stats[2]:
+        print(stats, "lost")
 
 defense.close()
 attack.close()

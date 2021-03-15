@@ -1,0 +1,6 @@
+,Wins,Ties,Losses,Soccer Score,Basic Score
+TD3-best_avg,44,23,13,1.938,0.388
+TD3-lasttry,41,2,37,1.562,0.05
+TD3-stronger,32,19,29,1.437,0.037
+Weak,22,21,37,1.088,-0.187
+Strong,15,27,38,0.9,-0.288
