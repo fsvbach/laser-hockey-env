@@ -2,8 +2,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from laserhockey.gameplay import gameplay
-import laserhockey.hockey_env as h_env
-
 
 fps=2
 
@@ -76,7 +74,7 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
             axs[1].plot(running_mean(losses, 64))
             plt.show()
             
-            winrate = gameplay(env, q_agent, player2, N=2, show=True, analyze=False)
+            winrate = gameplay(env, q_agent, player2, N=10, show=True, analyze=False)
             print("ties-wins-losses: ", winrate)
             
         total_reward = 0

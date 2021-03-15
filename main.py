@@ -27,13 +27,10 @@ basic  = BasicOpponent(weak=False)
 
 # env.register_opponents([basic,last])#,ddpg,q_agent])
 
-ddpg = DDPGAgent()
+td3 = TD3(pretrained='superagent')
+td4 = TD3(pretrained='best_avg')
 
-train(env, agent=ddpg)
-
-td3 = TD3(pretrained='traininghall')
-
-stats = gameplay(env, td3, player2=td3, N=10, show=True, analyze=False)
+stats = gameplay(env, td3, player2=td4, N=10, show=True, analyze=False)
 print(stats)
 
 # env.close()

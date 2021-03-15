@@ -553,7 +553,6 @@ class HockeyEnv(gym.Env, EzPickle):
     #reward puck in sight
     punishment_positioning = 0
     # if self.player1.position[0] > self.puck.position[0]:
-
     #      punishment_positioning -= 0.05
     if self.player2.position[0] < self.puck.position[0]: 
         punishment_positioning += 0.15

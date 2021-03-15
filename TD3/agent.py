@@ -7,9 +7,10 @@ from tensorboardX import SummaryWriter
 from laserhockey.hockey_env import HockeyEnv_BasicOpponent
 from gym import spaces
 
+# the implementation of the algorithm is based on this github repository
+# https://gist.github.com/djbyrne/d58aa1abfe0a14e68686b2c514120d49
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def hidden_init(layer):
     fan_in = layer.weight.data.size()[0]
@@ -149,7 +150,7 @@ class TD3(object):
         return action.clip(self.action_space.low, self.action_space.high)
 
     def name(self):
-        return self.pretrained
+        return "TD3"
     
     def train(self, replay_buffer, iterations, batch_size=100, discount=0.99, tau=0.005, policy_noise=0.2, noise_clip=0.5, policy_freq=2):
         """Train and update actor and critic networks

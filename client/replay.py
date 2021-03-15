@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--record', action='store_true', help='Whether to record video or not')
     parser.add_argument('--render', action='store_true', help='Whether to render in realtime or not')
     parser.add_argument('--id', default=None, help='id of game you want to replay, do not specify to run all')
-    parser.add_argument('--output-path', default=None, help='Where to save video')
+    parser.add_argument('--output-path', default='client/user0/', help='Where to save video')
     parser.add_argument('--verbose', action='store_true', help='Print more info')
 
     args = parser.parse_args()

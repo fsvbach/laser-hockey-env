@@ -29,7 +29,7 @@ if __name__ == '__main__':
                     op='start_queuing',
                     num_games=None)
 
-    # Start interactive mode. Start playing by typing start_queuing. Stop playing by pressing escape and typing stop_queuing
+    # Start interactive mode. Start playing by typing start_queuing. Stop playing by pressing escape and typing stop_queueing
     # client = Client(username='user0', 
     #                 password='1234',
     #                 controller=controller, 

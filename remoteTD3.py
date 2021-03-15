@@ -24,8 +24,8 @@ if __name__ == '__main__':
     client = Client(username='Fynn_Bachmann_StillTrying', # Testuser
                     password="W@7c'M{Z",
                     controller=controller, 
-                    output_path='/tmp/ALRL2020/client/user0', # rollout buffer with finished games will be saved in here
-                    interactive=False,
+                    output_path='client/user0', # rollout buffer with finished games will be saved in here
+                    interactive=True,
                     op='start_queuing',
                     num_games=None)
 

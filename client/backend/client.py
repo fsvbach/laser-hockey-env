@@ -214,14 +214,20 @@ escape.
             ) -> None:
 
         action = self.controller.remote_act(np.asarray(ob)).tolist()
-        self.network_interface.send_action(action)
 
-        self.current_game.add_transition(next_obs=ob, 
-                                         next_action=action, 
-                                         r=r, 
-                                         done=done, 
-                                         info=info
-                                        )
+        try:
+            self.current_game.add_transition(next_obs=ob, 
+                                            next_action=action, 
+                                            r=r, 
+                                            done=done, 
+                                            info=info
+                                            )
+
+            self.network_interface.send_action(action)
+        except:
+            # Game is None, probably due to apportion.
+            # Just skipping this async call of step
+            pass
 
     def game_aborted(self, 
                      msg : str

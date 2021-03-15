@@ -18,7 +18,7 @@ from DQN.agent import DQNAgent
 from laserhockey.hockey_env import HockeyEnv
 
 
-load_weights = "training_hall_1"
+load_weights = "alg2"
 env = HockeyEnv()
 
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     client = Client(username='Johannes_Schulz_StillTrying', # Testuser
                     password='Rba*9UxK',
                     controller=controller, 
-                    output_path='/tmp/ALRL2020/client/Johannes_Schulz_StillTrying', # rollout buffer with finished games will be saved in here
+                    output_path='DQN/recorded_games', # rollout buffer with finished games will be saved in here
                     interactive=False,
                     op='start_queuing',
                     num_games=None)
