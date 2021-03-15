@@ -6,6 +6,7 @@ Created on Mon Mar 15 08:05:04 2021
 @author: johannes
 """
 import sys
+import numpy as np
 sys.path.append('/home/johannes/Uni/ReinforcementLearning/project/DQN')
 
 from client.remoteControllerInterface import RemoteControllerInterface
@@ -31,7 +32,7 @@ class RemoteDQNAgent(DQNAgent):
         RemoteControllerInterface.__init__(self, identifier='StillTrying_DQN')
 
     def remote_act(self, obs):
-        return self.act(obs,epsilon=0)
+        return np.asarray(self.act(obs,eps=0))
         
 
 if __name__ == '__main__':
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     client = Client(username='Johannes_Schulz_StillTrying', # Testuser
                     password='Rba*9UxK',
                     controller=controller, 
-                    output_path='/ALRL2020/games', # rollout buffer with finished games will be saved in here
+                    output_path='/tmp/ALRL2020/client/Johannes_Schulz_StillTrying', # rollout buffer with finished games will be saved in here
                     interactive=False,
                     op='start_queuing',
                     num_games=None)
