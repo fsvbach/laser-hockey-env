@@ -3,11 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.idea/*
 runs/*
 TD3.ipynb
 plots_report/*
 Plots/*
 client/user0/*
+main-ddpg.py
+main_dqn.py
 DQN/recorded_games
 DQN/plots
 DQN/weights
