@@ -24,7 +24,7 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 
 
 env = h_env.HockeyEnv()
-load_weights = 'alg3'
+load_weights = 'exp4_5000'
 #load_weights = 'training_hall_1'
 
 td3 = TD3(pretrained='stronger')
