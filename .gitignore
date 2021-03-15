@@ -11,6 +11,7 @@ client/user0/*
 DQN/recorded_games
 DQN/plots
 DQN/weights
+DQN/test
 
 # C extensions
 *.so
