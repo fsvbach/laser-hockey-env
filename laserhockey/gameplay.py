@@ -45,7 +45,6 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
                 env.render()
             if done: break
         win_stats[n, env._get_info()['winner']] = 1
-        input()
     return np.sum(win_stats, axis = 0)
 
 

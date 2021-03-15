@@ -61,11 +61,11 @@ class DQNAgent(object):
         self._action_space = action_space
         self._action_n = action_space.n
         self._config = {
-            "eps": 0.5,                               
+            "eps": 0.3,                               
             "discount": 0.95,
             "buffer_size": int(1e5),
             "batch_size": 128,
-            "learning_rate": 0.001, 
+            "learning_rate": 0.0005, 
             "update_rule": 20,
             "multistep": 3,
             "omega": 1,

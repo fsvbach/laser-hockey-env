@@ -74,8 +74,8 @@ def train(env, q_agent, player2=False, max_episodes=200, max_steps=300, name='te
             axs[1].plot(running_mean(losses, 64))
             plt.show()
             
-            winrate = gameplay(env, q_agent, player2, N=10, show=True, analyze=False)
-            print("ties-wins-losses: ", winrate)
+            #winrate = gameplay(env, q_agent, player2, N=10, show=True, analyze=False)
+            #print("ties-wins-losses: ", winrate)
             
         total_reward = 0
         ob = env.reset()

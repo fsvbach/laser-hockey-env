@@ -17,7 +17,7 @@ from laserhockey.gameplay import Tournament
 
 
 env = h_env.HockeyEnv()
-load_weights = 'alg2'
+load_weights = 'against_weak_45000'
 
 td4 = TD3(pretrained='best_avg')
 td3 = TD3(pretrained='superagent')
@@ -36,7 +36,7 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
 
 agents = [weak_basic_opponent, strong_basic_opponent, td3, ddpg, q_agent]
 tournament = Tournament(env, agents)
-tournament.run(10)
+tournament.run(50)
 tournament.print_scores()
 tournament.show_results()
 
