@@ -25,7 +25,7 @@ if __name__ == '__main__':
                     password="W@7c'M{Z",
                     controller=controller, 
                     output_path='/tmp/ALRL2020/client/user0', # rollout buffer with finished games will be saved in here
-                    interactive=False,
+                    interactive=True,
                     op='start_queuing',
                     num_games=None)
 
