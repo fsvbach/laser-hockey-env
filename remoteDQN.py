@@ -13,11 +13,11 @@ from client.backend.client import Client
 
 
 
-from DQN import DQNAgent
+from DQN.agent import DQNAgent
 from laserhockey.hockey_env import HockeyEnv
 
 
-load_weights = "DQN/weights/training_hall_1"
+load_weights = "training_hall_1"
 env = HockeyEnv()
 
 
