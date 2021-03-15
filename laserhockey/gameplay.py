@@ -31,21 +31,21 @@ def gameplay(env, player1, player2=False, N=1, show=False, analyze=False):
                 obs, reward, done, _info = env.step(np.hstack([a1,a2]))    
             else: 
                 obs, reward, done, _info = env.step(a1)
-                total_reward += sum(list(_info.values()))
+            total_reward += reward + sum(list(_info.values()))
             if show:
                 time.sleep(1/fps)
                 if analyze:
                     time.sleep(50/fps)
-                    print('winner:',_info['winner'])
-                    print("punishment_positioning: ", _info["punishment_positioning"])
+                    print("reward_positioning: ", _info["punishment_positioning"])
                     print("punishment_distance_puck: ", _info["punishment_distance_puck"])
-                    print("reward_puck_direction: ", _info["reward_puck_direction"])
+                    print("puck_direction: ", _info["reward_puck_direction"])
                     print("reward_touch_puck: ", _info["reward_touch_puck"])
-                    print('...')
-                    print(total_reward)
+                    print('TOTAL: ' ,total_reward)
+                    print('----------------------')
                 env.render()
             if done: break
         win_stats[n, env._get_info()['winner']] = 1
+        input()
     return np.sum(win_stats, axis = 0)
 
 

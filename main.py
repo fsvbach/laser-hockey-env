@@ -1,36 +1,24 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar  4 14:33:17 2021
-
-@author: fsvbach
-"""
-
-from laserhockey.hockey_env import HockeyEnv, BasicOpponent, StupidOpponent
+from laserhockey.hockey_env import HockeyEnv, BasicOpponent
 from laserhockey.gameplay import gameplay
-from laserhockey.TrainingHall import TrainingHall
 from DQN import agent
 from DDPG.ddpg_agent import DDPGAgent
 from TD3.agent import TD3
-from DDPG.train import train
 
 env = HockeyEnv()
 
-stupid = StupidOpponent()
 basic = BasicOpponent(weak=False)
 weak = BasicOpponent(weak=True)
 
-# env = TrainingHall(weak_opponent=True)
+ddpg = DDPGAgent(pretrained="DDPG/weights/checkpoint4")
 
-basic  = BasicOpponent(weak=False)
+q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = 'DQN/weights/alg2')
 
+# td3 = TD3(pretrained='superagent')
+td3 = TD3(pretrained='stronger')
 
-# env.register_opponents([basic,last])#,ddpg,q_agent])
-
-td3 = TD3(pretrained='superagent')
-td4 = TD3(pretrained='best_avg')
-
-stats = gameplay(env, td3, player2=td4, N=10, show=True, analyze=False)
+stats = gameplay(env, td3, player2=q_agent, N=10, show=True, analyze=True)
 print(stats)
 
-# env.close()
+env.close()
