@@ -27,11 +27,7 @@ td5 = TD3(pretrained='lasttry')
 strong_basic_opponent = h_env.BasicOpponent(weak=False)
 weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
-ddpg= DDPGAgent(env,
-                          actor_lr=1e-4,
-                          critic_lr=1e-3,
-                          update_rate=0.05,
-                          discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-35000")
+ddpg = DDPGAgent(pretrained="DDPG/weights/checkpoint4")
 
 q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
