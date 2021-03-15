@@ -7,9 +7,10 @@ from tensorboardX import SummaryWriter
 from laserhockey.hockey_env import HockeyEnv_BasicOpponent
 from gym import spaces
 
+# the implementation of the algorithm is based on this github repository
+# https://gist.github.com/djbyrne/d58aa1abfe0a14e68686b2c514120d49
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def hidden_init(layer):
     fan_in = layer.weight.data.size()[0]

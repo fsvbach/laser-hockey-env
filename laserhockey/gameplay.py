@@ -120,7 +120,7 @@ class Tournament:
         soccer = axs[1].imshow(self.results_soccer, cmap='Greens', interpolation='nearest')
         plt.colorbar(mappable=basic, ax=axs[0])
         plt.colorbar(mappable=soccer, ax=axs[1])
-        plt.savefig('plots_report/tournament_results.svg')
+        plt.savefig('Plots/tournament_results.svg')
         plt.show()
 
 
