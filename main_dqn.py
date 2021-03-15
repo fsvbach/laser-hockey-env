@@ -23,41 +23,25 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 # GAMEPLAY
 
 
-# env = h_env.HockeyEnv()
-# load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
+env = h_env.HockeyEnv()
+load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
+#load_weights = 'training_hall_1'
 
-# td3 = TD3(pretrained='stronger')
+td3 = TD3(pretrained='stronger')
 
-# strong_basic_opponent = h_env.BasicOpponent(weak=False)
-# weak_basic_opponent = h_env.BasicOpponent(weak=True) 
-
-# ddpg = DDPGAgent(env,
-#                           actor_lr=1e-4,
-#                           critic_lr=1e-3,
-#                           update_rate=0.05,
-#                           discount=0.9, update_target_every=20,
-#                           pretrained='DDPG/weights/ddpg-normal-eps-noise-10000')
-
-# ddpg2 = DDPGAgent(env,
-#                           actor_lr=1e-4,
-#                           critic_lr=1e-3,
-#                           update_rate=0.05,
-#                           discount=0.9, update_target_every=20,
-#                           pretrained='DDPG/weights/ddpg-normal-eps-noise-basic-35000')
+strong_basic_opponent = h_env.BasicOpponent(weak=False)
+weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
 
-# q_agent2 = agent.DQNAgent(env.observation_space, env.discrete_action_space,
-#                         convert_func =  env.discrete_to_continous_action,
-#                         pretrained   = 'DQN/weights/training_hall_1')
+
+q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
+                        convert_func =  env.discrete_to_continous_action,
+                        pretrained   = f'DQN/weights/{load_weights}')
 
 
-# q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
-#                         convert_func =  env.discrete_to_continous_action,
-#                         pretrained   = f'DQN/weights/{load_weights}')
-
-
-# stats = gameplay(env, q_agent, player2=td3, N=50, show=True, analyze=True)
-# print("ties-wins-losses: ", stats)
+stats = gameplay(env, q_agent, player2=strong_basic_opponent, N=10, show=True, analyze=False)
+print("ties-wins-losses: ", stats)
+env.close()
 
 #########################################################################################################
 # TOURNAMENT
@@ -110,32 +94,46 @@ defense = h_env.HockeyEnv(mode=h_env.HockeyEnv.TRAIN_DEFENSE)
 # TOURNAMENT
 
 
-env = h_env.HockeyEnv()
-load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
+# env = h_env.HockeyEnv()
+# load_weights = 'training_hall:50000_omega=110_1_150_75_10_40000'
 
+<<<<<<< HEAD
 td4 = TD3(pretrained='best_avg')
 td3 = TD3(pretrained='superagent')
 td5 = TD3(pretrained='stronger')
+=======
+# td4 = TD3(pretrained='traininghall')
+# td3 = TD3(pretrained='superagent')
+# td5 = TD3(pretrained='stronger')
+>>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
 
-strong_basic_opponent = h_env.BasicOpponent(weak=False)
-weak_basic_opponent = h_env.BasicOpponent(weak=True) 
+# strong_basic_opponent = h_env.BasicOpponent(weak=False)
+# weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
-ddpg= DDPGAgent(env,
-                         actor_lr=1e-4,
-                         critic_lr=1e-3,
-                         update_rate=0.05,
-                         discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-10000")
+# ddpg= DDPGAgent(env,
+#                          actor_lr=1e-4,
+#                          critic_lr=1e-3,
+#                          update_rate=0.05,
+#                          discount=0.9, update_target_every=20, pretrained="DDPG/weights/ddpg-normal-weak-10000")
 
 
-q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
-                        convert_func =  env.discrete_to_continous_action,
-                        pretrained   = f'DQN/weights/{load_weights}')
+# q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
+#                         convert_func =  env.discrete_to_continous_action,
+#                         pretrained   = f'DQN/weights/{load_weights}')
 
+<<<<<<< HEAD
 agents = [weak_basic_opponent, strong_basic_opponent, td3, td4,td5]
 tournament = Tournament(env, agents)
 tournament.run(40)
 tournament.print_scores()
 tournament.show_results()
+=======
+# agents = [weak_basic_opponent, strong_basic_opponent, td3, td4,td5]
+# tournament = Tournament(env, agents)
+# tournament.run(50)
+# tournament.print_scores()
+# tournament.show_results()
+>>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
 
 
 
@@ -145,7 +143,11 @@ tournament.show_results()
 # TRAINING HALL
 
 
+<<<<<<< HEAD
 # #load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+=======
+#load_weights = 'training_hall:50000_omega=110_1_150_75_10'
+>>>>>>> 6ded2c23586d3dc8cf92b94dcf1a6dfdafaba3a5
 # load_weights = 'exp2_15000'
 # training_hall = TrainingHall2()
 
