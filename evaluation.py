@@ -17,28 +17,28 @@ from laserhockey.gameplay import Tournament
 
 
 env = h_env.HockeyEnv()
-load_weights = 'against_weak_45000'
 
-td4 = TD3(pretrained='best_avg')
-td3 = TD3(pretrained='superagent')
-td5 = TD3(pretrained='lasttry')
+td5 = TD3(pretrained='continuation')
+td4 = TD3(pretrained='superagent')
+td3 = TD3(pretrained='overfit')
+td2 = TD3(pretrained='traininghall')
+td1 = TD3(pretrained='td3')
 
 
 strong_basic_opponent = h_env.BasicOpponent(weak=False)
 weak_basic_opponent = h_env.BasicOpponent(weak=True) 
 
-ddpg = DDPGAgent(pretrained="DDPG/weights/checkpoint4")
+ddpg = DDPGAgent(pretrained="DDPG/weights/ddpg-checkpoint4")
 
 q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         convert_func =  env.discrete_to_continous_action,
-                        pretrained   = f'DQN/weights/{load_weights}')
+                        pretrained   = 'DQN/weights/alg2')
 
 
-agents = [weak_basic_opponent, strong_basic_opponent, td3, ddpg, q_agent]
+agents = [weak_basic_opponent, strong_basic_opponent, td5,ddpg,q_agent]
 tournament = Tournament(env, agents)
-tournament.run(50)
+tournament.run(100)
 tournament.print_scores()
 tournament.show_results()
-
 
 

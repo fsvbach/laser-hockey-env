@@ -61,7 +61,8 @@ class Tournament:
         
     def run(self, rounds=100): 
         show = False
-        for i, player1 in enumerate(self.agents): 
+        for i, player1 in enumerate(self.agents):
+            print('starting player ', player1.name())
             for j, player2 in enumerate(self.agents): 
                 if i == j:
                     # results based on the basic metric
@@ -103,7 +104,7 @@ class Tournament:
     
     
     def show_results(self): 
-        fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize=(20,12))
+        fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize=(27,10))
         axs[0].set_title("basic metric")
         axs[1].set_title("soccer metric")
         

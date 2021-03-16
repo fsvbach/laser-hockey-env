@@ -123,10 +123,10 @@ class TD3(object):
         #self.scaling = torch.tensor([ 5.0,  5.0 , 5.0, 3.0, 3.0, 3.0,  
         #                                2.0,  2.0,  1.0, 1.0, 1.0, 1.0,  
         #                               10.0, 10.0, 10.0, 10.0, 5.0 ,5.0])
-        self.pretrained="TD3"
+        self.naming ="TD3"
         if pretrained:
             self.load(pretrained)
-            self.pretrained+='-'+pretrained
+            # self.naming=pretrained
 
 
         
@@ -150,7 +150,7 @@ class TD3(object):
         return action.clip(self.action_space.low, self.action_space.high)
 
     def name(self):
-        return "TD3"
+        return self.naming
     
     def train(self, replay_buffer, iterations, batch_size=100, discount=0.99, tau=0.005, policy_noise=0.2, noise_clip=0.5, policy_freq=2):
         """Train and update actor and critic networks

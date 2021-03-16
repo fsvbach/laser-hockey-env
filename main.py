@@ -16,9 +16,9 @@ q_agent = agent.DQNAgent(env.observation_space, env.discrete_action_space,
                         pretrained   = 'DQN/weights/alg2')
 
 # td3 = TD3(pretrained='superagent')
-td3 = TD3(pretrained='stronger')
+td3 = TD3(pretrained='lasttry')
 
-stats = gameplay(env, td3, player2=q_agent, N=10, show=True, analyze=True)
+stats = gameplay(env, td3, player2=weak, N=100, show=False, analyze=False)
 print(stats)
 
 env.close()

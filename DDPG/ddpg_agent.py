@@ -89,7 +89,7 @@ class DDPGAgent(object):
         self.critic.eval()
     
     def name(self):
-        return self.model_name
+        return 'DDPG'
 
     def store_transition(self, transition):
         self.buffer.add_transition(transition)
